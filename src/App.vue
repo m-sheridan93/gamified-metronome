@@ -1,10 +1,13 @@
 <template>
   <v-app>
-    <v-main>
-      <v-container>
-        <Metronome />
-      </v-container>
-    </v-main>
+    <v-app-bar color="primary" dark>
+      <v-toolbar-title>Gamified Metronome</v-toolbar-title>
+    </v-app-bar>
+      <v-main>
+        <v-container>
+          <Metronome/>
+        </v-container>
+      </v-main>
   </v-app>
 </template>
 
