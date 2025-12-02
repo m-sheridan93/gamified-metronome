@@ -4,7 +4,7 @@
       <v-toolbar-title>Gamified Metronome</v-toolbar-title>
     </v-app-bar>
       <v-main>
-        <v-container>
+        <v-container fluid>
           <Metronome/>
         </v-container>
       </v-main>
