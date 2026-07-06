@@ -15,9 +15,9 @@
       <v-btn
           class="mt-4"
           color="primary"
-          @click="toggleMetronome"
+          @click="toggle"
       >
-        {{ running ? 'Stop' : 'Start' }}
+        {{ isRunning ? 'Stop' : 'Start' }}
       </v-btn>
 
       <v-card class="mt-4" variant="outlined">
@@ -26,11 +26,11 @@
           <div class="text-h4 text-center mb-2">{{ formattedTime }}</div>
           <div class="text-center">
             <v-chip
-                :color="running ? 'success' : 'default'"
+                :color="isRunning ? 'success' : 'default'"
                 variant="outlined"
                 class="mb-2"
             >
-              {{ running ? 'Active' : 'Paused' }}
+              {{ isRunning ? 'Active' : 'Paused' }}
             </v-chip>
             <br>
             <v-btn
@@ -85,15 +85,12 @@
 <script setup>
 import {ref, watch, computed} from 'vue'
 import MetronomeControls from './MetonomeControls.vue'
+import {useMetronome} from '../composables/useMetronome'
 
-const bpm = ref(100)
-const running = ref(false)
-const soundType = ref('Tick')
-const volume = ref(1)
-let intervalId = null
+// Audio engine (single AudioContext + look-ahead scheduler).
+const {bpm, volume, soundType, isRunning, toggle} = useMetronome()
 
 // Session timer variables
-const sessionStartTime = ref(null)
 const totalSessionTime = ref(0) // Accumulated time across all sessions
 const currentSessionStart = ref(null)
 const timerTick = ref(0) // Force reactivity updates
@@ -113,7 +110,7 @@ const formattedTime = computed(() => {
   timerTick.value
 
   let displayTime = totalSessionTime.value
-  if (running.value && currentSessionStart.value) {
+  if (isRunning.value && currentSessionStart.value) {
     displayTime += Date.now() - currentSessionStart.value
   }
   const totalSeconds = Math.floor(displayTime / 1000)
@@ -126,7 +123,7 @@ const formattedTime = computed(() => {
 const currentSessionTimeForPoints = computed(() => {
   timerTick.value // Force reactivity
   let displayTime = totalSessionTime.value
-  if (running.value && currentSessionStart.value) {
+  if (isRunning.value && currentSessionStart.value) {
     displayTime += Date.now() - currentSessionStart.value
   }
   return Math.floor(displayTime / 1000) // Return seconds
@@ -136,42 +133,6 @@ const progressToNextPoint = computed(() => {
   const secondsInCurrentThreshold = currentSessionTimeForPoints.value % POINTS_THRESHOLD_SECONDS.value
   return (secondsInCurrentThreshold / POINTS_THRESHOLD_SECONDS.value) * 100
 })
-
-function playTick() {
-  const ctx = new (window.AudioContext || window.webkitAudioContext)()
-  const osc = ctx.createOscillator()
-  const gain = ctx.createGain()
-  osc.type = 'sine'
-  osc.frequency.value = 1000
-  gain.gain.setValueAtTime(volume.value, ctx.currentTime)
-  gain.gain.exponentialRampToValueAtTime(volume.value * 0.3, ctx.currentTime + 0.02)
-  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.07)
-  osc.connect(gain)
-  gain.connect(ctx.destination)
-  osc.start(ctx.currentTime)
-  osc.stop(ctx.currentTime + 0.07)
-}
-
-function playBeep() {
-  const ctx = new (window.AudioContext || window.webkitAudioContext)()
-  const osc = ctx.createOscillator()
-  const gain = ctx.createGain()
-  osc.type = 'sine'
-  osc.frequency.value = 1000
-  gain.gain.setValueAtTime(volume.value, ctx.currentTime)
-  osc.connect(gain)
-  gain.connect(ctx.destination)
-  osc.start()
-  osc.stop(ctx.currentTime + 0.05)
-}
-
-function playMetronomeSound() {
-  if (soundType.value === 'Tick') {
-    playTick()
-  } else if (soundType.value === 'Beep') {
-    playBeep()
-  }
-}
 
 // Points calculation functions
 function calculatePoints() {
@@ -265,33 +226,18 @@ function resetSession() {
   sessionPoints.value = 0
   consistencyBonus.value = 0
   // Restart timer if metronome is running
-  if (running.value) {
+  if (isRunning.value) {
     startTimer()
   }
 }
 
-// Then in your watcher and interval:
-watch(running, (newVal) => {
-  if (newVal) {
-    playMetronomeSound()
-    intervalId = setInterval(playMetronomeSound, (60 / bpm.value) * 1000)
+// Drive the session timer + points off the engine's running state.
+// The metronome audio itself is handled entirely by useMetronome.
+watch(isRunning, (running) => {
+  if (running) {
     startTimer()
   } else {
-    clearInterval(intervalId)
-    intervalId = null
     stopTimer()
   }
 })
-
-
-watch(bpm, (newVal) => {
-  if (running.value) {
-    clearInterval(intervalId)
-    intervalId = setInterval(playMetronomeSound, (60 / newVal) * 1000)
-  }
-})
-
-function toggleMetronome() {
-  running.value = !running.value
-}
 </script>
