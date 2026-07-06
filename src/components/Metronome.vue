@@ -12,6 +12,13 @@
           :soundType="soundType"
           @update:soundType="soundType = $event"
       />
+      <div class="beat-indicator mt-4">
+        <div
+            class="beat-dot"
+            :class="{ 'beat-dot--pulse': isPulsing, 'beat-dot--idle': !isRunning }"
+        ></div>
+      </div>
+
       <v-btn
           class="mt-4"
           color="primary"
@@ -83,12 +90,25 @@
 </template>
 
 <script setup>
-import {ref, watch, computed} from 'vue'
+import {ref, watch, computed, onUnmounted} from 'vue'
 import MetronomeControls from './MetonomeControls.vue'
 import {useMetronome} from '../composables/useMetronome'
 
 // Audio engine (single AudioContext + look-ahead scheduler).
-const {bpm, volume, soundType, isRunning, toggle} = useMetronome()
+const {bpm, volume, soundType, isRunning, toggle, onBeat} = useMetronome()
+
+// Visual beat indicator: pulse the dot on each beat, synced to the audio clock.
+const isPulsing = ref(false)
+let pulseTimeout = null
+const stopBeatListener = onBeat(() => {
+  isPulsing.value = true
+  clearTimeout(pulseTimeout)
+  pulseTimeout = setTimeout(() => { isPulsing.value = false }, 120)
+})
+onUnmounted(() => {
+  stopBeatListener()
+  clearTimeout(pulseTimeout)
+})
 
 // Session timer variables
 const totalSessionTime = ref(0) // Accumulated time across all sessions
@@ -241,3 +261,29 @@ watch(isRunning, (running) => {
   }
 })
 </script>
+
+<style scoped>
+.beat-indicator {
+  display: flex;
+  justify-content: center;
+}
+
+.beat-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: rgb(var(--v-theme-primary));
+  opacity: 0.35;
+  transform: scale(1);
+  transition: transform 110ms ease-out, opacity 110ms ease-out;
+}
+
+.beat-dot--pulse {
+  opacity: 1;
+  transform: scale(1.5);
+}
+
+.beat-dot--idle {
+  opacity: 0.2;
+}
+</style>
