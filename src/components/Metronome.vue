@@ -19,32 +19,32 @@
       >
         {{ running ? 'Stop' : 'Start' }}
       </v-btn>
-      
+
       <v-card class="mt-4" variant="outlined">
         <v-card-title class="text-h6">Session Timer</v-card-title>
         <v-card-text>
           <div class="text-h4 text-center mb-2">{{ formattedTime }}</div>
           <div class="text-center">
             <v-chip
-              :color="running ? 'success' : 'default'"
-              variant="outlined"
-              class="mb-2"
+                :color="running ? 'success' : 'default'"
+                variant="outlined"
+                class="mb-2"
             >
               {{ running ? 'Active' : 'Paused' }}
             </v-chip>
             <br>
             <v-btn
-              color="warning"
-              variant="outlined"
-              size="small"
-              @click="resetSession"
+                color="warning"
+                variant="outlined"
+                size="small"
+                @click="resetSession"
             >
               Reset Session
             </v-btn>
           </div>
         </v-card-text>
       </v-card>
-      
+
       <v-card class="mt-4" variant="outlined">
         <v-card-title class="text-h6">Practice Points</v-card-title>
         <v-card-text>
@@ -58,18 +58,18 @@
               <div class="text-caption">This Session</div>
             </div>
           </div>
-          
+
           <v-progress-linear
-            :model-value="progressToNextPoint"
-            color="primary"
-            height="8"
-            rounded
-            class="mb-2"
+              :model-value="progressToNextPoint"
+              color="primary"
+              height="8"
+              rounded
+              class="mb-2"
           ></v-progress-linear>
           <div class="text-caption text-center">
-            {{ Math.floor(60 - (currentSessionTimeForPoints % 60)) }}s until next point
+            {{ Math.floor(POINTS_THRESHOLD_SECONDS - (currentSessionTimeForPoints % POINTS_THRESHOLD_SECONDS)) }}s until next point
           </div>
-          
+
           <div v-if="consistencyBonus > 0" class="mt-3">
             <v-chip color="success" variant="outlined" size="small">
               <v-icon start>mdi-star</v-icon>
@@ -83,7 +83,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import {ref, watch, computed} from 'vue'
 import MetronomeControls from './MetonomeControls.vue'
 
 const bpm = ref(100)
@@ -100,6 +100,7 @@ const timerTick = ref(0) // Force reactivity updates
 let timerIntervalId = null
 
 // Points system variables
+const POINTS_THRESHOLD_SECONDS = ref(60) // Change this value to adjust point earning rate
 const totalPoints = ref(parseInt(localStorage.getItem('metronome-total-points') || '0'))
 const sessionPoints = ref(0)
 const consistencyBonus = ref(0)
@@ -110,7 +111,7 @@ const practiceStreak = ref(parseInt(localStorage.getItem('metronome-practice-str
 const formattedTime = computed(() => {
   // Include timerTick to force reactivity
   timerTick.value
-  
+
   let displayTime = totalSessionTime.value
   if (running.value && currentSessionStart.value) {
     displayTime += Date.now() - currentSessionStart.value
@@ -132,8 +133,8 @@ const currentSessionTimeForPoints = computed(() => {
 })
 
 const progressToNextPoint = computed(() => {
-  const secondsInCurrentMinute = currentSessionTimeForPoints.value % 60
-  return (secondsInCurrentMinute / 60) * 100
+  const secondsInCurrentThreshold = currentSessionTimeForPoints.value % POINTS_THRESHOLD_SECONDS.value
+  return (secondsInCurrentThreshold / POINTS_THRESHOLD_SECONDS.value) * 100
 })
 
 function playTick() {
@@ -171,13 +172,14 @@ function playMetronomeSound() {
     playBeep()
   }
 }
+
 // Points calculation functions
 function calculatePoints() {
-  const currentMinutes = Math.floor(currentSessionTimeForPoints.value / 60)
-  
-  if (currentMinutes > sessionPoints.value) {
-    const pointsToAdd = currentMinutes - sessionPoints.value
-    sessionPoints.value = currentMinutes
+  const currentThresholds = Math.floor(currentSessionTimeForPoints.value / POINTS_THRESHOLD_SECONDS.value)
+
+  if (currentThresholds > sessionPoints.value) {
+    const pointsToAdd = currentThresholds - sessionPoints.value
+    sessionPoints.value = currentThresholds
     totalPoints.value += pointsToAdd
     savePointsToStorage()
   }
@@ -186,12 +188,12 @@ function calculatePoints() {
 function calculateConsistencyBonus() {
   const today = new Date().toDateString()
   const lastPractice = lastPracticeDate.value
-  
+
   if (lastPractice) {
     const lastDate = new Date(lastPractice)
     const todayDate = new Date(today)
     const daysDiff = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24))
-    
+
     if (daysDiff === 1) {
       // Consecutive day - increase streak
       practiceStreak.value += 1
@@ -204,13 +206,13 @@ function calculateConsistencyBonus() {
     // First time practicing
     practiceStreak.value = 1
   }
-  
+
   // Award consistency bonus based on streak
   if (practiceStreak.value >= 3) {
     consistencyBonus.value = Math.floor(practiceStreak.value / 3)
     totalPoints.value += consistencyBonus.value
   }
-  
+
   lastPracticeDate.value = today
   savePointsToStorage()
 }
@@ -224,12 +226,12 @@ function savePointsToStorage() {
 // Timer functions
 function startTimer() {
   currentSessionStart.value = Date.now()
-  
+
   // Calculate consistency bonus when starting a session
   if (sessionPoints.value === 0) {
     calculateConsistencyBonus()
   }
-  
+
   timerIntervalId = setInterval(() => {
     // Force reactivity update for the computed property
     timerTick.value++
