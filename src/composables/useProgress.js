@@ -12,7 +12,8 @@ import { loadState, saveState, todayISO, daysBetween } from '../lib/storage'
 
 const POINTS_THRESHOLD_SECONDS = 60 // practice time earned per point — tune here
 
-const state = reactive(loadState())
+// Shared so sibling composables (e.g. useStudio) read/write the same save blob.
+export const state = reactive(loadState())
 
 // Debounced persistence: practice time ticks ~10x/sec, so avoid hammering storage.
 let saveTimer = null
@@ -23,7 +24,7 @@ function persistSoon() {
     saveState(state)
   }, 1000)
 }
-function persistNow() {
+export function persistNow() {
   if (saveTimer) {
     clearTimeout(saveTimer)
     saveTimer = null
