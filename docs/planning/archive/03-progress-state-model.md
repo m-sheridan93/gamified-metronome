@@ -41,7 +41,7 @@ Actions:
 - `load()` / `persist()` → via the storage wrapper.
 
 ### `useStudioStore` (defined fully in `04`)
-Owns the item catalog references and what the player owns/placed.
+Owns the item catalogue references and what the player owns/placed.
 
 ## Points accounting: spent vs total
 
@@ -85,7 +85,7 @@ Include `version` from day one so migrations are possible.
 
 ## Points-earning rules (make them explicit + tunable)
 
-Current: +1 point / 60s practised; +streak/3 bonus every 3 consecutive days.
+Current: +1 point / 60s practiced; +streak/3 bonus every 3 consecutive days.
 
 Decisions to lock:
 - **Rate**: keep 1 pt/min? Faster early game feels better — consider 1 pt / 30s, or a

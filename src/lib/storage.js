@@ -17,7 +17,7 @@ export function defaults() {
     // Economy
     pointsBalance: 0,          // spendable wallet
     pointsEarnedLifetime: 0,   // never decreases (achievements/stats)
-    pointsProgressSeconds: 0,  // practice seconds banked toward the next point
+    pointsProgressSeconds: 0,  // practice seconds banked towards the next point
     // Practice history
     lifetimeSeconds: 0,        // total practice time ever
     dailySeconds: {},          // { 'YYYY-MM-DD': seconds } — powers challenges

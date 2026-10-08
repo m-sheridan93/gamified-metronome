@@ -19,7 +19,7 @@ item reaches "Next".
 
 - **Surface lifetime hours** — the emotional hook ("20 years, never knew"). Already
   tracked (`lifetimeSeconds`); just needs a home in the UI.
-- **Free session mode** — plain metronome + timer, "just practise," logs time. Low effort.
+- **Free session mode** — plain metronome + timer, "just practice," logs time. Low effort.
 - **Decide the orphaned Practice Points card** — with the shop parked, swap it for a
   lifetime-hours / today's-challenge summary, or hide it.
 
@@ -36,7 +36,7 @@ Build in this order; each depends on the previous:
 3. **Session logging + history** — every session (free or runner) recorded; a history
    view; feeds lifetime hours and the challenges.
 4. **Light onboarding** — instruments, level, genres, weekly/daily practice goals, what
-   you like to practise. Build *after* the above, because it configures them (goals set
+   you like to practice. Build *after* the above, because it configures them (goals set
    challenge targets; preferences seed presets). Onboarding before that configures nothing.
 
 ## Later — content & reward polish
@@ -45,15 +45,15 @@ Build in this order; each depends on the previous:
   visuals), so hold the visual polish until assets exist. Logic can use `mdi` placeholders.
 - **Practice tips / guided templates** — curated, science-backed guidance shown during
   sessions. Content-heavy (research + writing by the author), not code-heavy.
-- **Personalized practice suggestions** — use onboarding + history to suggest what to work on.
+- **Personalised practice suggestions** — use onboarding + history to suggest what to work on.
 
 ## Someday — platform (needs backend; deliberate later decision)
 
 Do not build the UI for these until the backend exists and there are real users. Keep
 the data model ready for them (see Platform foundations).
 
-- **Social feed** — what friends practised; reactions/comments.
-- **Comparison-safe custom feed** — toggle to see *who* practised, not *how much*
+- **Social feed** — what friends practiced; reactions/comments.
+- **Comparison-safe custom feed** — toggle to see *who* practiced, not *how much*
   (a `vision.md` principle; design it in when the feed is built).
 - **Teacher mode** — "I teach / I'm learning / both" at onboarding; students under a
   teacher; teacher sees student feeds, leaves comments; grad-cap badge; events
@@ -72,7 +72,7 @@ Cheap now, prevents a rewrite later. The point is backend-*ready*, not a backend
 - **A "current profile" concept** now, even single-user, so accounts slot in cleanly.
 - **Pick a target backend direction** (e.g. Supabase/Postgres, or a small Node API) —
   decide, don't build — so entities are shaped to fit it.
-- **Keep state serializable and sync-shaped** (no functions in stored state, deterministic
+- **Keep state serialisable and sync-shaped** (no functions in stored state, deterministic
   IDs, no reliance on array position).
 
 ## Mobile delivery — iOS + Android (see `mobile.md`)

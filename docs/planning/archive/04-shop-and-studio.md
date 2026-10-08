@@ -5,14 +5,14 @@ visibly grows as you buy gear. This is the half of the vision that doesn't exist
 
 ## Concept
 
-- A **Shop**: a catalog of items with point costs. Buying deducts from `pointsBalance`
+- A **Shop**: a catalogue of items with point costs. Buying deducts from `pointsBalance`
   (`03`) and marks the item owned.
 - A **Studio**: a persistent scene showing everything you own, assembled over time —
   amps, speakers, rack gear, a grand piano, etc.
 - Progression feel: cheap starter items early, aspirational big-ticket items (grand piano)
   that take many practice sessions to afford.
 
-## Item catalog (data-driven)
+## Item catalogue (data-driven)
 
 Define items as data, not code, so adding gear is a one-line change. `src/data/items.js`:
 
@@ -101,13 +101,13 @@ Consider `vue-router` now if not already present — three screens justify it.
 
 - Set costs relative to the earning rate from `03`. Example at 1 pt/min: a 20-pt starter
   amp = 20 min of practice; a 1000-pt grand piano = ~16.7 hours. Tune tiers so there's
-  always something affordable soon *and* something to save toward.
+  always something affordable soon *and* something to save towards.
 - Consider a couple of very cheap "first buy" items so a new user gets a reward in their
   first session (retention).
 
 ## Deliverables
 
-- [ ] `items.js` catalog (data-driven).
+- [ ] `items.js` catalogue (data-driven).
 - [ ] `useStudioStore` with `buy` / ownership, persisted via `03`.
 - [ ] Shop screen: grid, balance, buy flow, affordability states.
 - [ ] Studio screen: renders owned/placed items (start with emoji/icon option).

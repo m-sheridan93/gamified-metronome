@@ -71,7 +71,7 @@ so the metronome stops when the screen locks. To keep it ticking:
   audio suspension.
 
 Decision to confirm: do we actually want the metronome to run with the screen locked,
-or is "keep screen awake while practising" enough? The former needs the background-audio
+or is "keep screen awake while practicing" enough? The former needs the background-audio
 work above; the latter is just `keep-awake` and is much simpler. Recommendation: start
 with keep-awake for MVP, add true background audio only if users want it.
 
