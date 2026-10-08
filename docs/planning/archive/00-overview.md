@@ -4,13 +4,13 @@
 
 A metronome fused with a productivity idle game (in the spirit of *Focus Friend*):
 
-- You use the metronome to practise music.
-- Practising earns **points** (time-based, with consistency bonuses).
+- You use the metronome to practice music.
+- Practicing earns **points** (time-based, with consistency bonuses).
 - Points are **spent** on cosmetics and new features.
 - The headline cosmetic is a **studio** you build up over time — rack gear, amps,
   speakers, a grand piano, etc.
 
-The core loop: **practise → earn → spend → see your studio grow → want to practise more.**
+The core loop: **practice → earn → spend → see your studio grow → want to practice more.**
 
 ## Where the project stands today
 
@@ -18,7 +18,7 @@ Already built (in `src/components/Metronome.vue`):
 
 - Metronome with BPM control, tick/beep sounds, volume.
 - Session timer (accumulates practice time, pause/reset).
-- Points earning: +1 point per 60s practised, persisted to `localStorage`.
+- Points earning: +1 point per 60s practiced, persisted to `localStorage`.
 - Day-over-day consistency streak with a bonus every 3 days.
 
 Not yet built — the "game" half:

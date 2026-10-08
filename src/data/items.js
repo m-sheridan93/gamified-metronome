@@ -1,5 +1,5 @@
 /**
- * Studio item catalog. Data-driven: add gear by adding an entry.
+ * Studio item catalogue. Data-driven: add gear by adding an entry.
  * `cost` is in points; `icon` is any Material Design Icon name.
  * Costs are intentionally low for now so the loop is easy to exercise.
  */

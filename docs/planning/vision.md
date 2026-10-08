@@ -9,13 +9,13 @@ A practice tool for musicians that makes focused, deliberate practice easy to *d
 easy to *log*, and rewarding to *keep up*. The metronome is **one feature inside it**,
 not the point.
 
-North Star: **the tool the author would open every single day to practise.**
+North Star: **the tool the author would open every single day to practice.**
 
 ## Who it's for
 
-- **Primary user: the author** — a performing guitarist who practises with a specific
+- **Primary user: the author** — a performing guitarist who practices with a specific
   method (timed blocks, stepped tempos). If he wouldn't use it daily, it isn't done.
-- **Then**: other practising musicians who want structure and a record of their work.
+- **Then**: other practicing musicians who want structure and a record of their work.
 - **Eventually (platform phase)**: teachers tracking students; friends keeping each
   other accountable.
 
@@ -47,8 +47,8 @@ a deliberate, later decision — the architecture should make it a plug-in, not 
 1. **Practice Engine** — metronome, free + guided (stepped-tempo) sessions, savable
    presets, session logging, lifetime hours.
 2. **Motivation** — streaks, challenges, badges/medals.
-3. **Personalization** — onboarding (instruments, level, genres, weekly/daily goals,
-   what you like to practise) that configures the above.
+3. **Personalisation** — onboarding (instruments, level, genres, weekly/daily goals,
+   what you like to practice) that configures the above.
 4. **Guidance** — science-backed practice tips and guided session templates.
 5. **Music material** — slow-downer / embedded players (feasibility unproven; see
    roadmap investigation).
@@ -63,7 +63,7 @@ a deliberate, later decision — the architecture should make it a plug-in, not 
   the baseline; anything illustrative — badges, medals, any studio art — waits for real
   assets from a person. AI writes code, not art.
 - **Comparison can harm.** Social media's "how much did everyone else do" drives anxiety.
-  If/when a feed exists, **"see *who* practised, not *how much*" is a first-class
+  If/when a feed exists, **"see *who* practiced, not *how much*" is a first-class
   option**, not an afterthought. Never force comparison. Captured now so it's baked in
   later, not bolted on.
 - **Backend-ready by construction.** Domain entities have stable IDs and timestamps,

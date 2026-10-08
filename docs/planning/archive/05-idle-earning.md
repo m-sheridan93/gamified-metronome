@@ -8,15 +8,15 @@ progress: they record a timestamp when you leave and, when you return, compute w
 "earned" while away. This phase implements that illusion honestly.
 
 Because it's timestamp math, it works identically in Vue / Capacitor / native — this
-feature does **not** push toward going native.
+feature does **not** push towards going native.
 
 ## Design decision: what should "away" earn?
 
-A metronome game is different from a pure idle game — the core action (practising) is
+A metronome game is different from a pure idle game — the core action (practicing) is
 active, not passive. So decide how generous offline earning should be:
 
 - **Option A — No offline earning.** Points come only from real practice. Purest, most
-  honest to "practice music." Idle earning would undercut the point of practising.
+  honest to "practice music." Idle earning would undercut the point of practicing.
 - **Option B — Small passive trickle.** A modest rate while away (much lower than active
   practice), capped, to reward returning. Adds idle-game stickiness.
 - **Option C — "Studio generates points."** Owned studio items produce a slow passive
@@ -44,7 +44,7 @@ Mechanics:
 
 Store additions (extend `03` schema):
 - `lastSeenAt` (already reserved in the schema).
-- Per-item `passiveRate` in the catalog (`04`) for Option C.
+- Per-item `passiveRate` in the catalogue (`04`) for Option C.
 
 ## Anti-abuse: clock manipulation
 

@@ -5,7 +5,7 @@
       <div v-if="ownedItems.length === 0" class="text-center text-medium-emphasis py-8">
         <v-icon size="48" class="mb-2">mdi-sofa-outline</v-icon>
         <div>Your studio is empty.</div>
-        <div class="text-caption">Practise to earn points, then buy gear in the Shop.</div>
+        <div class="text-caption">Practice to earn points, then buy gear in the Shop.</div>
       </div>
 
       <v-row v-else dense>
