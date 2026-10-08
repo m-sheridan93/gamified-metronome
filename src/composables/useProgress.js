@@ -38,10 +38,14 @@ function award(points) {
   state.sessionPoints += points
 }
 
-/** Accrue practice time and award any whole points it crosses. */
-function tick(deltaSeconds) {
+/**
+ * Accrue practice time and award any whole points it crosses.
+ * Pass { session: false } to count time without touching the Metronome tab's
+ * "Session Timer" (e.g. time from the stepped-tempo runner).
+ */
+function tick(deltaSeconds, { session = true } = {}) {
   if (!(deltaSeconds > 0)) return
-  state.sessionSeconds += deltaSeconds
+  if (session) state.sessionSeconds += deltaSeconds
   state.lifetimeSeconds += deltaSeconds
   const today = todayISO()
   state.dailySeconds[today] = (state.dailySeconds[today] || 0) + deltaSeconds
