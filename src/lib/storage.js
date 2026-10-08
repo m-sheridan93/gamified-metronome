@@ -20,6 +20,7 @@ export function defaults() {
     pointsProgressSeconds: 0,  // practice seconds banked toward the next point
     // Practice history
     lifetimeSeconds: 0,        // total practice time ever
+    dailySeconds: {},          // { 'YYYY-MM-DD': seconds } — powers challenges
     streak: 0,
     lastPracticeDate: '',      // local YYYY-MM-DD
     consistencyBonus: 0,       // last streak bonus awarded (for the UI chip)
@@ -94,6 +95,14 @@ export function daysBetween(fromISO, toISODate) {
   const a = new Date(`${fromISO}T00:00:00`)
   const b = new Date(`${toISODate}T00:00:00`)
   return Math.round((b - a) / 86400000)
+}
+
+/** Monday of the current (or given) week, as a local YYYY-MM-DD string. */
+export function startOfWeekISO(date = new Date()) {
+  const d = new Date(date)
+  const mondayOffset = (d.getDay() + 6) % 7 // Sun=6, Mon=0, ... Sat=5
+  d.setDate(d.getDate() - mondayOffset)
+  return toISO(d)
 }
 
 function toISO(date) {
