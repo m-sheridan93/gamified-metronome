@@ -51,40 +51,6 @@
           </div>
         </v-card-text>
       </v-card>
-
-      <v-card class="mt-4" variant="outlined">
-        <v-card-title class="text-h6">Practice Points</v-card-title>
-        <v-card-text>
-          <div class="d-flex justify-space-between align-center mb-3">
-            <div>
-              <div class="text-h4 text-primary">{{ totalPoints }}</div>
-              <div class="text-caption">Total Points</div>
-            </div>
-            <div class="text-right">
-              <div class="text-h6 text-success">+{{ sessionPoints }}</div>
-              <div class="text-caption">This Session</div>
-            </div>
-          </div>
-
-          <v-progress-linear
-              :model-value="progressToNextPoint"
-              color="primary"
-              height="8"
-              rounded
-              class="mb-2"
-          ></v-progress-linear>
-          <div class="text-caption text-center">
-            {{ secondsToNextPoint }}s until next point
-          </div>
-
-          <div v-if="consistencyBonus > 0" class="mt-3">
-            <v-chip color="success" variant="outlined" size="small">
-              <v-icon start>mdi-star</v-icon>
-              Consistency Bonus: +{{ consistencyBonus }}
-            </v-chip>
-          </div>
-        </v-card-text>
-      </v-card>
     </v-card-text>
   </v-card>
 </template>
@@ -98,18 +64,9 @@ import {useProgress} from '../composables/useProgress'
 // Audio engine (single AudioContext + look-ahead scheduler).
 const {bpm, volume, soundType, isRunning, toggle, onBeat} = useMetronome()
 
-// Player progress (shared, persisted): points, streak, session totals.
-const {
-  totalPoints,
-  sessionPoints,
-  consistencyBonus,
-  formattedTime,
-  progressToNextPoint,
-  secondsToNextPoint,
-  tick,
-  startSession,
-  resetSession,
-} = useProgress()
+// Session time tracking (shared, persisted). Points logic still runs under the
+// hood in useProgress; we just no longer surface the points UI here.
+const {formattedTime, tick, startSession, resetSession} = useProgress()
 
 // Visual beat indicator: pulse the dot on each beat, synced to the audio clock.
 const isPulsing = ref(false)
