@@ -132,6 +132,23 @@ export function useMetronome() {
     if (ctx && ctx.state === 'suspended') ctx.resume()
   }
 
+  /** Play a one-off cue tone (block change / session end), through the same context. */
+  function playCue(frequency = 2000, duration = 0.15, delay = 0) {
+    const audio = ensureContext()
+    const t = audio.currentTime + delay
+    const osc = audio.createOscillator()
+    const gain = audio.createGain()
+    osc.type = 'sine'
+    osc.frequency.value = frequency
+    const level = Math.max(volume.value, 0.0001)
+    gain.gain.setValueAtTime(level, t)
+    gain.gain.exponentialRampToValueAtTime(0.001, t + duration)
+    osc.connect(gain)
+    gain.connect(audio.destination)
+    osc.start(t)
+    osc.stop(t + duration)
+  }
+
   // Tear down timers and the audio context when the owning scope unmounts.
   onScopeDispose(() => {
     stop()
@@ -154,5 +171,6 @@ export function useMetronome() {
     toggle,
     resume,
     onBeat,
+    playCue,
   }
 }
