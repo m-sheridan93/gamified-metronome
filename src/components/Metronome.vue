@@ -60,6 +60,7 @@ import {ref, watch, onUnmounted} from 'vue'
 import MetronomeControls from './MetonomeControls.vue'
 import {useMetronome} from '../composables/useMetronome'
 import {useProgress} from '../composables/useProgress'
+import {beginSession} from '../composables/useSessionLog'
 
 // Audio engine (single AudioContext + look-ahead scheduler).
 const {bpm, volume, soundType, isRunning, toggle, onBeat} = useMetronome()
@@ -77,22 +78,28 @@ const stopBeatListener = onBeat(() => {
   pulseTimeout = setTimeout(() => { isPulsing.value = false }, 120)
 })
 
-// Feed practice time to the progress store while the metronome runs. The audio
-// itself is handled entirely by useMetronome; here we only track time + points.
+// Feed practice time to the progress store while the metronome runs, and log each
+// start/stop as a free practice session. The audio itself is handled by useMetronome.
 let timerIntervalId = null
 let lastTickAt = 0
+let practiceLog = null
 watch(isRunning, (running) => {
   if (running) {
     startSession()
+    practiceLog = beginSession('free')
     lastTickAt = Date.now()
     timerIntervalId = setInterval(() => {
       const now = Date.now()
       tick((now - lastTickAt) / 1000)
       lastTickAt = now
     }, 100)
-  } else if (timerIntervalId) {
-    clearInterval(timerIntervalId)
-    timerIntervalId = null
+  } else {
+    if (timerIntervalId) {
+      clearInterval(timerIntervalId)
+      timerIntervalId = null
+    }
+    practiceLog?.end({bpm: bpm.value})
+    practiceLog = null
   }
 })
 
@@ -100,6 +107,7 @@ onUnmounted(() => {
   stopBeatListener()
   clearTimeout(pulseTimeout)
   if (timerIntervalId) clearInterval(timerIntervalId)
+  practiceLog?.end({bpm: bpm.value})
 })
 </script>
 
