@@ -10,6 +10,10 @@
             <v-icon start>mdi-metronome</v-icon>
             Metronome
           </v-tab>
+          <v-tab value="session">
+            <v-icon start>mdi-playlist-play</v-icon>
+            Session
+          </v-tab>
           <v-tab value="shop">
             <v-icon start>mdi-store</v-icon>
             Shop
@@ -23,6 +27,9 @@
         <v-window v-model="tab">
           <v-window-item value="metronome">
             <Metronome/>
+          </v-window-item>
+          <v-window-item value="session">
+            <SessionRunner/>
           </v-window-item>
           <v-window-item value="shop">
             <Shop/>
@@ -41,6 +48,7 @@ import {ref} from 'vue'
 import Metronome from './components/Metronome.vue'
 import Shop from './components/Shop.vue'
 import Studio from './components/Studio.vue'
+import SessionRunner from './components/SessionRunner.vue'
 
 const tab = ref('metronome')
 </script>
