@@ -43,6 +43,8 @@ function tick(deltaSeconds) {
   if (!(deltaSeconds > 0)) return
   state.sessionSeconds += deltaSeconds
   state.lifetimeSeconds += deltaSeconds
+  const today = todayISO()
+  state.dailySeconds[today] = (state.dailySeconds[today] || 0) + deltaSeconds
   state.pointsProgressSeconds += deltaSeconds
   while (state.pointsProgressSeconds >= POINTS_THRESHOLD_SECONDS) {
     state.pointsProgressSeconds -= POINTS_THRESHOLD_SECONDS
