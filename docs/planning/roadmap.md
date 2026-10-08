@@ -75,6 +75,16 @@ Cheap now, prevents a rewrite later. The point is backend-*ready*, not a backend
 - **Keep state serializable and sync-shaped** (no functions in stored state, deterministic
   IDs, no reliance on array position).
 
+## Mobile delivery — iOS + Android (see `mobile.md`)
+
+The app must ship on both stores. Approach: **Capacitor** — wrap the existing Vue app,
+one codebase → web + iOS + Android. For a web dev this needs no new language; the real
+cost is native toolchains (Xcode, Android Studio) and store accounts (Apple $99/yr,
+Google $25 once). **Sequencing:** not yet — do it after the *Next* block, when there's
+enough app to be worth installing; Android first (cheaper/faster), iOS after. Optional
+early step: stand up the Capacitor shell just for on-device testing while building. Full
+plan, prerequisites, and what-changes in `mobile.md`.
+
 ## Investigations (research before planning)
 
 - **Music material feasibility** — what's actually possible for a slow-downer with
