@@ -14,14 +14,6 @@
             <v-icon start>mdi-playlist-play</v-icon>
             Session
           </v-tab>
-          <v-tab value="shop">
-            <v-icon start>mdi-store</v-icon>
-            Shop
-          </v-tab>
-          <v-tab value="studio">
-            <v-icon start>mdi-sofa</v-icon>
-            Studio
-          </v-tab>
         </v-tabs>
 
         <v-window v-model="tab">
@@ -30,12 +22,6 @@
           </v-window-item>
           <v-window-item value="session">
             <SessionRunner/>
-          </v-window-item>
-          <v-window-item value="shop">
-            <Shop/>
-          </v-window-item>
-          <v-window-item value="studio">
-            <Studio/>
           </v-window-item>
         </v-window>
       </v-container>
@@ -46,9 +32,8 @@
 <script setup>
 import {ref} from 'vue'
 import Metronome from './components/Metronome.vue'
-import Shop from './components/Shop.vue'
-import Studio from './components/Studio.vue'
 import SessionRunner from './components/SessionRunner.vue'
+// Shop.vue / Studio.vue are kept in the repo but hidden from the UI for now.
 
 const tab = ref('metronome')
 </script>
