@@ -10,13 +10,9 @@
             <v-icon start>mdi-metronome</v-icon>
             Metronome
           </v-tab>
-          <v-tab value="shop">
-            <v-icon start>mdi-store</v-icon>
-            Shop
-          </v-tab>
-          <v-tab value="studio">
-            <v-icon start>mdi-sofa</v-icon>
-            Studio
+          <v-tab value="challenges">
+            <v-icon start>mdi-trophy</v-icon>
+            Challenges
           </v-tab>
         </v-tabs>
 
@@ -24,11 +20,8 @@
           <v-window-item value="metronome">
             <Metronome/>
           </v-window-item>
-          <v-window-item value="shop">
-            <Shop/>
-          </v-window-item>
-          <v-window-item value="studio">
-            <Studio/>
+          <v-window-item value="challenges">
+            <Challenges/>
           </v-window-item>
         </v-window>
       </v-container>
@@ -39,8 +32,8 @@
 <script setup>
 import {ref} from 'vue'
 import Metronome from './components/Metronome.vue'
-import Shop from './components/Shop.vue'
-import Studio from './components/Studio.vue'
+import Challenges from './components/Challenges.vue'
+// Shop.vue / Studio.vue are parked — kept in the repo but not shown for now.
 
 const tab = ref('metronome')
 </script>
