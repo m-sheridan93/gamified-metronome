@@ -50,14 +50,14 @@ export function beginSession(type, details = {}) {
   }
 }
 
-/** Human-friendly duration: "45s", "12m 30s", "1h 5m". */
+/** Human-friendly duration: "45s", "12m 30s", "12m", "1h 5m", "2h". Drops zero parts. */
 export function formatDuration(totalSeconds) {
   const s = Math.max(0, Math.floor(totalSeconds))
   const h = Math.floor(s / 3600)
   const m = Math.floor((s % 3600) / 60)
   const sec = s % 60
-  if (h > 0) return `${h}h ${m}m`
-  if (m > 0) return `${m}m ${sec}s`
+  if (h > 0) return m > 0 ? `${h}h ${m}m` : `${h}h`
+  if (m > 0) return sec > 0 ? `${m}m ${sec}s` : `${m}m`
   return `${sec}s`
 }
 
