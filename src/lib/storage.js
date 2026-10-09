@@ -21,6 +21,8 @@ export function defaults() {
     // Practice history
     lifetimeSeconds: 0,        // total practice time ever
     dailySeconds: {},          // { 'YYYY-MM-DD': seconds } — powers challenges
+    sessions: [],              // logged practice sessions, oldest first (see useSessionLog)
+    presets: [],               // saved session plans (see usePresets)
     streak: 0,
     lastPracticeDate: '',      // local YYYY-MM-DD
     consistencyBonus: 0,       // last streak bonus awarded (for the UI chip)

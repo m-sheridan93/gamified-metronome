@@ -7,37 +7,37 @@ item reaches "Next".
 
 ## Status snapshot (built)
 
-- **Metronome engine** — `useMetronome`, drift-free look-ahead scheduler, visual beat
-  (PRs #2).
-- **Progress & state** — `useProgress` + `storage.js`, versioned save blob, balance vs
-  lifetime split, hardened streak, per-day practice history (PR #3, + challenges work).
-- **Shop / studio** — built then **parked** (files kept, tabs hidden). Points still
-  accrue under the hood (PR #4).
-- **Challenges** — daily + weekly auto challenges derived from history (challenges branch).
+- **Metronome engine**: `useMetronome`, drift-free look-ahead scheduler, visual beat,
+  `playCue` tones (PRs #2, #7).
+- **Progress & state**: `useProgress` + `storage.js`, versioned save blob, lifetime,
+  streak, and per-day practice history (PRs #3, #9).
+- **Session runner**: stepped-tempo blocks, block editor, goal-BPM ramp builder,
+  completion cues (PR #7).
+- **Challenges**: daily + weekly auto challenges derived from practice history (PR #9).
+- **Saved presets**: name and save a session plan, auto-load the last one used, update
+  or delete it; offered after each session.
+- **Session logging + History tab**: every free or runner session is recorded with an id
+  and timestamps; the History tab shows lifetime hours, this week, and a session list.
+- **Shop / studio**: built, then hidden from the UI along with the points card (files
+  kept; PRs #4, #8).
 
-## Now — finish the solo core
+## Now: finish the solo core
 
-- **Surface lifetime hours** — the emotional hook ("20 years, never knew"). Already
-  tracked (`lifetimeSeconds`); just needs a home in the UI.
-- **Free session mode** — plain metronome + timer, "just practice," logs time. Low effort.
-- **Decide the orphaned Practice Points card** — with the shop parked, swap it for a
-  lifetime-hours / today's-challenge summary, or hide it.
+- ~~Surface lifetime hours~~ Done: shown on the History tab.
+- ~~Decide the orphaned Practice Points card~~ Done: hidden (PR #8).
+- **Free session mode**: largely covered now that the Metronome tab logs sessions.
+  Revisit only if a dedicated "just practice" timer is still wanted.
 
-## Next — the heart of the method (all solo, high personal value)
+## Next: the heart of the method (all solo, high personal value)
 
-Build in this order; each depends on the previous:
-
-1. **Stepped-tempo session runner** — define a sequence of tempo blocks
-   (`60bpm·2m → 80·2m → 70·2m …`); the metronome auto-shifts BPM, a per-block countdown
-   runs, a chime advances. This is *the* method, and it sits on the existing engine
-   (phase-continuous BPM is already there).
-2. **Savable presets** — after a runner session, "save this?" → reload "Master of
-   Puppets solo, 10 min" next time from a presets list. Depends on the runner.
-3. **Session logging + history** — every session (free or runner) recorded; a history
-   view; feeds lifetime hours and the challenges.
-4. **Light onboarding** — instruments, level, genres, weekly/daily practice goals, what
-   you like to practice. Build *after* the above, because it configures them (goals set
-   challenge targets; preferences seed presets). Onboarding before that configures nothing.
+1. ~~Stepped-tempo session runner~~ Done (PR #7).
+2. ~~Savable presets~~ Done. After a session you're offered to save it; the Session tab
+   opens on your most recently used preset, with load, update, and delete.
+3. ~~Session logging + history~~ Done. Runner and free practice both feed lifetime
+   hours, the streak, and challenges.
+4. **Light onboarding**: instruments, level, genres, weekly/daily practice goals, what
+   you like to practice. Build after presets, because it configures them (goals set
+   challenge targets; preferences seed presets).
 
 ## Later — content & reward polish
 
