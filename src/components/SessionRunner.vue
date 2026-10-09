@@ -19,6 +19,13 @@
 
       <!-- Editor view -->
       <template v-else>
+        <!-- After a session: offer to save the plan -->
+        <v-alert v-if="showSavePrompt" type="success" variant="tonal" density="compact" class="mb-4">
+          <div class="mb-2">{{ promptText }}</div>
+          <v-btn size="small" color="primary" class="mr-2" @click="openSaveDialog">Save preset</v-btn>
+          <v-btn size="small" variant="text" @click="showSavePrompt = false">No thanks</v-btn>
+        </v-alert>
+
         <!-- Presets -->
         <div class="d-flex align-center" style="gap: 8px;">
           <v-select
@@ -133,7 +140,7 @@
 </template>
 
 <script setup>
-import {ref, computed} from 'vue'
+import {ref, computed, watch} from 'vue'
 import {useSessionRunner} from '../composables/useSessionRunner'
 import {usePresets, sameBlocks, suggestName} from '../composables/usePresets'
 
@@ -178,6 +185,7 @@ function confirmSave() {
   const p = savePreset(saveName.value, rows.value)
   selectedPresetId.value = p.id
   saveDialog.value = false
+  showSavePrompt.value = false
 }
 
 // Delete dialog.
@@ -231,6 +239,8 @@ function autoBuild() {
 }
 
 function startSession() {
+  showSavePrompt.value = false
+  sessionStartedAt = Date.now()
   if (selectedPresetId.value) markUsed(selectedPresetId.value)
   // Convert the editor's minutes into the engine's seconds, then run.
   blocks.value = rows.value.map((r) => ({
@@ -240,6 +250,22 @@ function startSession() {
   }))
   start()
 }
+
+// When a session ends, offer to save its plan if it isn't already saved unchanged.
+// Skip very short runs (accidental start/stop).
+const showSavePrompt = ref(false)
+let sessionStartedAt = 0
+
+watch(isActive, (active, wasActive) => {
+  if (!wasActive || active) return
+  const ranLongEnough = Date.now() - sessionStartedAt >= 10000
+  const unsaved = !selectedPreset.value || isEdited.value
+  showSavePrompt.value = ranLongEnough && unsaved
+})
+
+const promptText = computed(() => (isEdited.value
+    ? `Save your changes to "${selectedPreset.value.name}"?`
+    : 'Good session. Save it as a preset for next time?'))
 
 const formattedTime = computed(() => {
   const s = Math.max(0, secondsLeft.value)
