@@ -51,6 +51,8 @@ item reaches "Next".
 
 Do not build the UI for these until the backend exists and there are real users. Keep
 the data model ready for them (see Platform foundations).
+Accounts, sign-in, and the security rules for all of this are planned in
+`accounts-and-security.md`.
 
 - **Social feed** — what friends practiced; reactions/comments.
 - **Comparison-safe custom feed** — toggle to see *who* practiced, not *how much*
@@ -70,8 +72,8 @@ Cheap now, prevents a rewrite later. The point is backend-*ready*, not a backend
   into per-entity repos). Keep call sites async-friendly so `localStorage` can be swapped
   for a REST/Supabase backend without touching features.
 - **A "current profile" concept** now, even single-user, so accounts slot in cleanly.
-- **Pick a target backend direction** (e.g. Supabase/Postgres, or a small Node API) —
-  decide, don't build — so entities are shaped to fit it.
+- ~~Pick a target backend direction~~ Decided: Supabase (Postgres + auth). See
+  `accounts-and-security.md`.
 - **Keep state serialisable and sync-shaped** (no functions in stored state, deterministic
   IDs, no reliance on array position).
 
