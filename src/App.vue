@@ -2,7 +2,10 @@
   <v-app>
     <v-app-bar color="primary" dark>
       <v-toolbar-title>Gamified Metronome</v-toolbar-title>
+      <v-spacer/>
+      <v-btn icon="mdi-account-circle" aria-label="Profile" title="Profile" @click="profileOpen = true"/>
     </v-app-bar>
+    <Onboarding v-model="profileOpen"/>
     <v-main>
       <v-container fluid>
         <v-tabs v-model="tab" align-tabs="center" class="mb-4">
@@ -49,7 +52,13 @@ import Metronome from './components/Metronome.vue'
 import SessionRunner from './components/SessionRunner.vue'
 import Challenges from './components/Challenges.vue'
 import History from './components/History.vue'
+import Onboarding from './components/Onboarding.vue'
+import {useProfile} from './composables/useProfile'
 // Shop.vue / Studio.vue are kept in the repo but hidden from the UI for now.
 
 const tab = ref('metronome')
+
+// First launch opens onboarding; afterwards the profile button reopens it.
+const {needsOnboarding} = useProfile()
+const profileOpen = ref(needsOnboarding.value)
 </script>
