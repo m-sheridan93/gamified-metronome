@@ -1,25 +1,25 @@
-# 05 — Idle / Offline Earning
+# 05: Idle / Offline Earning
 
 ## Reality check first
 
-You cannot run code while an iOS app is fully closed — there is no true background
+You cannot run code while an iOS app is fully closed; there is no true background
 "idle" accrual on any mobile platform. Games like *Focus Friend* **simulate** idle
 progress: they record a timestamp when you leave and, when you return, compute what you
 "earned" while away. This phase implements that illusion honestly.
 
-Because it's timestamp math, it works identically in Vue / Capacitor / native — this
+Because it's timestamp math, it works identically in Vue / Capacitor / native, so this
 feature does **not** push towards going native.
 
 ## Design decision: what should "away" earn?
 
-A metronome game is different from a pure idle game — the core action (practicing) is
+A metronome game is different from a pure idle game: the core action (practicing) is
 active, not passive. So decide how generous offline earning should be:
 
-- **Option A — No offline earning.** Points come only from real practice. Purest, most
+- **Option A: No offline earning.** Points come only from real practice. Purest, most
   honest to "practice music." Idle earning would undercut the point of practicing.
-- **Option B — Small passive trickle.** A modest rate while away (much lower than active
+- **Option B: Small passive trickle.** A modest rate while away (much lower than active
   practice), capped, to reward returning. Adds idle-game stickiness.
-- **Option C — "Studio generates points."** Owned studio items produce a slow passive
+- **Option C: "Studio generates points."** Owned studio items produce a slow passive
   income while away (e.g. the amp earns 1 pt/hour), turning the studio into an idle
   engine. Most game-like; ties `04` and `05` together.
 
@@ -39,7 +39,7 @@ Mechanics:
   - `rate` = flat trickle (B) or `sum(passiveRate of owned items)` (C).
   - `cap` = maximum offline duration that counts (e.g. 8 hours) so leaving for a week
     doesn't dump a fortune.
-- Show a "While you were away you earned +N points" welcome-back toast — the satisfying
+- Show a "While you were away you earned +N points" welcome-back toast, the satisfying
   re-entry moment.
 
 Store additions (extend `03` schema):
@@ -49,7 +49,7 @@ Store additions (extend `03` schema):
 ## Anti-abuse: clock manipulation
 
 Users can set their device clock forward to fake elapsed time. For a personal/offline
-game this is acceptable — note it and don't over-engineer. If it ever matters, clamp with
+game this is acceptable; note it and don't over-engineer. If it ever matters, clamp with
 a monotonic source or server time, but that's out of scope.
 
 ## Interaction with the session timer

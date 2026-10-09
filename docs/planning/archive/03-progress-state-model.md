@@ -1,8 +1,8 @@
-# 03 — Progress & State Model
+# 03: Progress & State Model
 
 ## Why this phase
 
-Today, all state — BPM, timer, points, streak, persistence — lives inside
+Today, all state (BPM, timer, points, streak, persistence) lives inside
 `Metronome.vue` as loose refs, with `localStorage` reads/writes scattered through the
 functions. That's fine for one screen, but the shop and studio (`04`) need to read points
 and write inventory from *other* components. We need a single, shared, persisted source
@@ -12,10 +12,10 @@ of truth before building the game.
 
 Options:
 
-- **Pinia** — the idiomatic Vue 3 shared-state solution. Best if state is read/written
+- **Pinia**: the idiomatic Vue 3 shared-state solution. Best if state is read/written
   across many components (it will be: metronome, timer, shop, studio, header). Adds one
   dependency. **Recommended.**
-- **A `useProgress` composable** with module-scoped refs — zero deps, works, but you
+- **A `useProgress` composable** with module-scoped refs: zero deps, works, but you
   hand-roll persistence and it's easy to create multiple instances by accident.
 
 Given the app is growing into multiple screens sharing points/inventory, go with **Pinia**.
@@ -27,12 +27,12 @@ Owns the economy and practice history.
 
 State:
 - `totalPoints: number`
-- `lifetimeSeconds: number` — total practice time ever (for stats/achievements)
+- `lifetimeSeconds: number`: total practice time ever (for stats/achievements)
 - `streak: number`, `lastPracticeDate: string (ISO date)`
-- `lastSeenAt: number (epoch ms)` — for idle earning (`05`)
+- `lastSeenAt: number (epoch ms)`: for idle earning (`05`)
 
 Getters:
-- `pointsSpendable` (may differ from total if we track spent separately — see below)
+- `pointsSpendable` (may differ from total if we track spent separately; see below)
 
 Actions:
 - `addPracticeTime(seconds)` → accrues points at the configured rate, updates streak.
@@ -48,8 +48,8 @@ Owns the item catalogue references and what the player owns/placed.
 Current code conflates "points earned" with "points available." Once you can spend, you
 need two numbers:
 
-- `pointsEarnedLifetime` (never decreases — good for achievements/prestige).
-- `pointsBalance` (earned minus spent — what the shop checks).
+- `pointsEarnedLifetime` (never decreases; good for achievements/prestige).
+- `pointsBalance` (earned minus spent; what the shop checks).
 
 Recommendation: store `pointsBalance` as the spendable wallet and `pointsEarnedLifetime`
 separately. Shop spends from balance; achievements read lifetime.
@@ -64,7 +64,7 @@ and persist on change (debounced) and on app pause.
 ### Storage wrapper
 Introduce `src/lib/storage.js` with `get(key)`, `set(key, value)`, `remove(key)`:
 - MVP: backed by `localStorage`.
-- iOS: swap to `@capacitor/preferences` behind the same interface — no feature code changes.
+- iOS: swap to `@capacitor/preferences` behind the same interface, with no feature code changes.
 - JSON-encode a single `progress` blob rather than many string keys, so schema evolves cleanly.
 
 ### Save schema (versioned)
@@ -88,7 +88,7 @@ Include `version` from day one so migrations are possible.
 Current: +1 point / 60s practiced; +streak/3 bonus every 3 consecutive days.
 
 Decisions to lock:
-- **Rate**: keep 1 pt/min? Faster early game feels better — consider 1 pt / 30s, or a
+- **Rate**: keep 1 pt/min? Faster early game feels better; consider 1 pt / 30s, or a
   curve. Put the rate in the store config so it's one number to tune.
 - **Only-while-running**: points accrue only when the metronome is actually running
   (already the case via the timer). Confirm that's the intended rule vs "app open."

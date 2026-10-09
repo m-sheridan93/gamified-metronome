@@ -41,29 +41,29 @@ item reaches "Next".
    goals; goals set the challenge targets. Using answers to suggest presets is a
    possible follow-up.
 
-## Later — content & reward polish
+## Later: content & reward polish
 
-- **Badges / medals / rewards** — plan now, but needs **human-designed art** (no AI
+- **Badges / medals / rewards**: plan now, but needs **human-designed art** (no AI
   visuals), so hold the visual polish until assets exist. Logic can use `mdi` placeholders.
-- **Practice tips / guided templates** — curated, science-backed guidance shown during
+- **Practice tips / guided templates**: curated, science-backed guidance shown during
   sessions. Content-heavy (research + writing by the author), not code-heavy.
-- **Personalised practice suggestions** — use onboarding + history to suggest what to work on.
+- **Personalised practice suggestions**: use onboarding + history to suggest what to work on.
 
-## Someday — platform (needs backend; deliberate later decision)
+## Someday: platform (needs backend; deliberate later decision)
 
 Do not build the UI for these until the backend exists and there are real users. Keep
 the data model ready for them (see Platform foundations).
 Accounts, sign-in, and the security rules for all of this are planned in
 `accounts-and-security.md`.
 
-- **Social feed** — what friends practiced; reactions/comments.
-- **Comparison-safe custom feed** — toggle to see *who* practiced, not *how much*
+- **Social feed**: what friends practiced; reactions/comments.
+- **Comparison-safe custom feed**: toggle to see *who* practiced, not *how much*
   (a `vision.md` principle; design it in when the feed is built).
-- **Teacher mode** — "I teach / I'm learning / both" at onboarding; students under a
+- **Teacher mode**: "I teach / I'm learning / both" at onboarding; students under a
   teacher; teacher sees student feeds, leaves comments; grad-cap badge; events
-  (lessons, recitals); messaging. This is effectively a second product — scope it as one.
+  (lessons, recitals); messaging. This is effectively a second product, so scope it as one.
 
-## Platform foundations — do incrementally, starting now
+## Platform foundations: do incrementally, starting now
 
 Cheap now, prevents a rewrite later. The point is backend-*ready*, not a backend yet.
 
@@ -79,19 +79,19 @@ Cheap now, prevents a rewrite later. The point is backend-*ready*, not a backend
 - **Keep state serialisable and sync-shaped** (no functions in stored state, deterministic
   IDs, no reliance on array position).
 
-## Mobile delivery — iOS + Android (see `mobile.md`)
+## Mobile delivery: iOS + Android (see `mobile.md`)
 
-The app must ship on both stores. Approach: **Capacitor** — wrap the existing Vue app,
+The app must ship on both stores. Approach: **Capacitor**, which wraps the existing Vue app:
 one codebase → web + iOS + Android. For a web dev this needs no new language; the real
 cost is native toolchains (Xcode, Android Studio) and store accounts (Apple $99/yr,
-Google $25 once). **Sequencing:** not yet — do it after the *Next* block, when there's
+Google $25 once). **Sequencing:** not yet. Do it after the *Next* block, when there's
 enough app to be worth installing; Android first (cheaper/faster), iOS after. Optional
 early step: stand up the Capacitor shell just for on-device testing while building. Full
 plan, prerequisites, and what-changes in `mobile.md`.
 
 ## Investigations (research before planning)
 
-- **Music material feasibility** — what's actually possible for a slow-downer with
+- **Music material feasibility**: what's actually possible for a slow-downer with
   YouTube / Spotify / Songsterr / MuseScore? Known walls: Spotify API won't slow tracks;
   YouTube embeds only do fixed speeds; MuseScore in-app viewing isn't openly available;
   Songsterr is its own app. Likely realistic scope: a speed-adjustable player for files

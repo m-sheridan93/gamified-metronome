@@ -1,4 +1,4 @@
-# Gamified Metronome — Planning Overview
+# Gamified Metronome: Planning Overview
 
 ## Vision
 
@@ -7,7 +7,7 @@ A metronome fused with a productivity idle game (in the spirit of *Focus Friend*
 - You use the metronome to practice music.
 - Practicing earns **points** (time-based, with consistency bonuses).
 - Points are **spent** on cosmetics and new features.
-- The headline cosmetic is a **studio** you build up over time — rack gear, amps,
+- The headline cosmetic is a **studio** you build up over time: rack gear, amps,
   speakers, a grand piano, etc.
 
 The core loop: **practice → earn → spend → see your studio grow → want to practice more.**
@@ -21,7 +21,7 @@ Already built (in `src/components/Metronome.vue`):
 - Points earning: +1 point per 60s practiced, persisted to `localStorage`.
 - Day-over-day consistency streak with a bonus every 3 days.
 
-Not yet built — the "game" half:
+Not yet built (the "game" half):
 
 - Anywhere to **spend** points.
 - The **studio** scene and the items you buy for it.
@@ -30,7 +30,7 @@ Not yet built — the "game" half:
 Known issues to fix regardless of direction (see `02-metronome-engine.md`):
 
 - Timing uses `setInterval`, which drifts and is not sample-accurate.
-- A new `AudioContext` is created on every tick — wasteful and glitchy.
+- A new `AudioContext` is created on every tick, which is wasteful and glitchy.
 - `totalSessionTime` and `sessionPoints` are **not** persisted, so a mid-practice
   reload loses progress.
 
@@ -38,7 +38,7 @@ Known issues to fix regardless of direction (see `02-metronome-engine.md`):
 
 Goal: get to a real **iOS app** while keeping the Vue codebase the author already knows.
 
-**Chosen path: Capacitor** — wrap the Vue web app in a native shell.
+**Chosen path: Capacitor**, which wraps the Vue web app in a native shell.
 
 | Path | Keep Vue? | App Store? | Timing | Locked-screen audio | Effort |
 |---|---|---|---|---|---|
@@ -55,11 +55,11 @@ insufficient in real testing. Details in `01-platform-setup.md`.
 
 Each feature has its own planning doc. Decide and approve a doc before building it.
 
-1. **Platform + project setup** — `01-platform-setup.md`
-2. **Metronome engine rewrite** — `02-metronome-engine.md`
-3. **Progress & state model** — `03-progress-state-model.md`
-4. **Shop & studio** — `04-shop-and-studio.md`
-5. **Idle / offline earning** — `05-idle-earning.md`
+1. **Platform + project setup**: `01-platform-setup.md`
+2. **Metronome engine rewrite**: `02-metronome-engine.md`
+3. **Progress & state model**: `03-progress-state-model.md`
+4. **Shop & studio**: `04-shop-and-studio.md`
+5. **Idle / offline earning**: `05-idle-earning.md`
 
 Suggested sequencing rationale:
 

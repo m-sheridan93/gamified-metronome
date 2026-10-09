@@ -33,5 +33,5 @@ Types: `feat`, `fix`, `refactor`, `docs`, `chore`, `test`, `style`.
 ## Pull requests
 
 - **Title**: same convention as commits, e.g. `feat: metronome engine rewrite (look-ahead scheduling)`.
-- **Numbers**: GitHub assigns PR numbers automatically — never invent one. Reference existing ones as `#12`.
+- **Numbers**: GitHub assigns PR numbers automatically; never invent one. Reference existing ones as `#12`.
 - Keep PRs focused; one logical change per PR where practical.
