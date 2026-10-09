@@ -1,4 +1,4 @@
-# 01 — Platform & Project Setup (Capacitor + iOS)
+# 01: Platform & Project Setup (Capacitor + iOS)
 
 ## Goal
 
@@ -10,7 +10,7 @@ without rewriting in Swift. Keep the web app runnable in the browser for fast de
 - Reuses 100% of the current Vue codebase.
 - Produces a real Xcode project → App Store distribution.
 - Exposes native capabilities (background audio, haptics, storage) through plugins.
-- Escape hatch: if timing/background ever proves inadequate, revisit native SwiftUI —
+- Escape hatch: if timing/background ever proves inadequate, revisit native SwiftUI,
   but only after real-device testing says so.
 
 ## Prerequisites
@@ -18,7 +18,7 @@ without rewriting in Swift. Keep the web app runnable in the browser for fast de
 - macOS with **Xcode** installed (already on Darwin per environment).
 - An Apple Developer account (for device testing + App Store; free tier works for
   on-device debugging).
-- CocoaPods (`sudo gem install cocoapods`) — Capacitor iOS uses it.
+- CocoaPods (`sudo gem install cocoapods`): Capacitor iOS uses it.
 - Node 16+ (already required by the project).
 
 ## Setup steps
@@ -45,7 +45,7 @@ without rewriting in Swift. Keep the web app runnable in the browser for fast de
 ## Capacitor config notes
 
 - `webDir: 'dist'` (Vite's build output).
-- `appId` in reverse-DNS form, stable — changing it later re-provisions the app.
+- `appId` in reverse-DNS form, stable, since changing it later re-provisions the app.
 - Consider `ios.contentInset` and `backgroundColor` to match the Vuetify theme.
 
 ## Plugins we will likely need
@@ -67,7 +67,7 @@ so the metronome stops when the screen locks. To keep it ticking:
   (`UIBackgroundModes` → `audio` in `Info.plist`).
 - Configure the audio session category to `playback` so it continues in background /
   with the silent switch on. (Via a Capacitor audio plugin or a small native shim.)
-- Verify on a **real device** — the simulator does not faithfully model background
+- Verify on a **real device**: the simulator does not faithfully model background
   audio suspension.
 
 Decision to confirm: do we actually want the metronome to run with the screen locked,
@@ -80,7 +80,7 @@ with keep-awake for MVP, add true background audio only if users want it.
 The metronome must be rewritten to use look-ahead scheduling regardless (see `02`).
 In a WKWebView, Web Audio's clock is reliable enough for a metronome **if** we schedule
 against `AudioContext.currentTime` rather than `setInterval`. This is the single biggest
-risk item — validate early with a real-device test playing at e.g. 200 BPM for several
+risk item: validate early with a real-device test playing at e.g. 200 BPM for several
 minutes and checking for drift.
 
 ## Storage migration
@@ -100,7 +100,7 @@ without touching feature code.
 
 ## Risks
 
-- **Audio timing in webview** — biggest unknown; mitigated by `02` rewrite + early test.
-- **App Store review** — a metronome + cosmetic game is low-risk, but IAP (if added)
+- **Audio timing in webview**: biggest unknown; mitigated by `02` rewrite + early test.
+- **App Store review**: a metronome + cosmetic game is low-risk, but IAP (if added)
   brings review requirements.
-- **Xcode/CocoaPods setup friction** — one-time cost.
+- **Xcode/CocoaPods setup friction**: one-time cost.

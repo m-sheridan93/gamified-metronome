@@ -1,4 +1,4 @@
-# 02 — Metronome Engine Rewrite
+# 02: Metronome Engine Rewrite
 
 ## Problem with the current engine
 
@@ -44,7 +44,7 @@ scheduler():
 ```
 
 Changing BPM just changes the increment; already-scheduled clicks play, future ones use
-the new tempo — no restart, no phase jump.
+the new tempo, with no restart, no phase jump.
 
 ## Proposed module: `useMetronome` composable
 
@@ -60,7 +60,7 @@ Methods:
 - `tapTempo()` (optional, from README wishlist)
 
 Internals:
-- Single `AudioContext` (lazily created on first `start()` — iOS/Safari require a user
+- Single `AudioContext` (lazily created on first `start()`: iOS/Safari require a user
   gesture to unlock audio; creating on the Start tap satisfies this).
 - Look-ahead scheduler as above.
 - One reusable click-synthesis function (oscillator + gain envelope) called with a
@@ -72,7 +72,7 @@ Internals:
 
 Design the beat loop around `beatsPerBar` from the start so we can later add:
 - Downbeat accent (higher pitch / louder on beat 1).
-- Subdivisions (eighths, triplets) — schedule N sub-clicks per beat.
+- Subdivisions (eighths, triplets): schedule N sub-clicks per beat.
 - Time signatures.
 
 Even if MVP ships plain quarter notes, structuring for `currentBeat % beatsPerBar`
@@ -112,4 +112,4 @@ timing. This decouples "is the metronome playing" from "how do we score practice
 ## Nice-to-haves (defer)
 
 - Tap tempo, accent patterns, subdivisions, preset tempo markings (Allegro etc.),
-  custom sound uploads — all from the README "Future Enhancements" list.
+  custom sound uploads, all from the README "Future Enhancements" list.

@@ -1,4 +1,4 @@
-# 04 — Shop & Studio
+# 04: Shop & Studio
 
 This is the motivating payoff: somewhere to **spend** points, and a **studio** that
 visibly grows as you buy gear. This is the half of the vision that doesn't exist yet.
@@ -7,7 +7,7 @@ visibly grows as you buy gear. This is the half of the vision that doesn't exist
 
 - A **Shop**: a catalogue of items with point costs. Buying deducts from `pointsBalance`
   (`03`) and marks the item owned.
-- A **Studio**: a persistent scene showing everything you own, assembled over time —
+- A **Studio**: a persistent scene showing everything you own, assembled over time:
   amps, speakers, rack gear, a grand piano, etc.
 - Progression feel: cheap starter items early, aspirational big-ticket items (grand piano)
   that take many practice sessions to afford.
@@ -38,8 +38,8 @@ optional `unlocksFeature` (see below).
 
 Two kinds of purchase:
 
-- **Cosmetic** — pure decoration in the studio (amp, piano, poster, plant).
-- **Feature unlock** — buying enables real app functionality: extra sounds, subdivisions,
+- **Cosmetic**: pure decoration in the studio (amp, piano, poster, plant).
+- **Feature unlock**: buying enables real app functionality: extra sounds, subdivisions,
   time signatures, presets, themes. Ties the economy to genuinely useful upgrades.
 
 Decision to lock: do we want feature-unlocks in v1, or cosmetics only first? Recommend
@@ -59,15 +59,15 @@ Actions:
   owned + placed. Returns success/error (insufficient funds, already owned).
 - `place(id)` / `remove(id)` (if we allow toggling what's shown).
 
-## Studio visual — three options (decision pending)
+## Studio visual: three options (decision pending)
 
 The author flagged this is undecided. Ranked by effort:
 
-1. **Emoji / CSS scene** — position emoji or styled divs in a room. Zero art, quick to
+1. **Emoji / CSS scene**: position emoji or styled divs in a room. Zero art, quick to
    prototype, playful. Good for validating the loop fast.
-2. **Icon / card grid** — each owned item as a Vuetify card with an `mdi` icon + label.
+2. **Icon / card grid**: each owned item as a Vuetify card with an `mdi` icon + label.
    No art, trivial to expand, but reads more like an inventory than a "room."
-3. **Layered 2D illustration** — a drawn room where items appear as illustrated objects
+3. **Layered 2D illustration**: a drawn room where items appear as illustrated objects
    at fixed positions (SVG layers or absolutely-positioned PNGs). Best "studio" feel,
    closest to *Focus Friend*, but needs art assets.
 
@@ -86,7 +86,7 @@ studio store is presentation-agnostic, so the visual can change without touching
 - Grid of item cards: icon, name, cost, and state (Buy / Owned / can't afford).
 - Disable / grey out unaffordable items; show the player's current balance prominently.
 - Confirmation on expensive purchases (optional).
-- Feedback on purchase (animation, the item appearing in the studio) — the dopamine hit.
+- Feedback on purchase (animation, the item appearing in the studio): the dopamine hit.
 
 ## Navigation
 
@@ -95,7 +95,7 @@ App grows beyond one screen: **Metronome**, **Studio**, **Shop**. Options:
 - Keep the metronome as the home screen; studio/shop a tap away.
 - Show the points balance in a persistent header/nav so earning is always visible.
 
-Consider `vue-router` now if not already present — three screens justify it.
+Consider `vue-router` now if not already present; three screens justify it.
 
 ## Economy tuning
 
