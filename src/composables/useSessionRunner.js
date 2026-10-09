@@ -1,4 +1,4 @@
-import { ref, computed, onScopeDispose } from 'vue'
+import { ref, computed, watch, onScopeDispose } from 'vue'
 import { useMetronome } from './useMetronome'
 import { useProgress } from './useProgress'
 import { beginSession } from './useSessionLog'
@@ -41,11 +41,14 @@ export function useSessionRunner(initialBlocks = []) {
         // (but not the Metronome tab's own session timer).
         progress.tick(1, { session: false })
         secondsLeft.value -= 1
-        if (secondsLeft.value <= 0) {
-            const next = currentIndex.value + 1
-            if (next < blocks.value.length) beginBlock(next)
-            else finish()                            // finished the last block
-        }
+        if (secondsLeft.value <= 0) advance()
+    }
+
+    // Move to the next block, or finish after the last one.
+    function advance() {
+        const next = currentIndex.value + 1
+        if (next < blocks.value.length) beginBlock(next)
+        else finish()
     }
 
     function start() {
@@ -91,11 +94,14 @@ export function useSessionRunner(initialBlocks = []) {
     }
 
     function skip() {
-        if (!isActive.value) return
-        const next = currentIndex.value + 1
-        if (next < blocks.value.length) beginBlock(next)
-        else finish()
+        if (isActive.value) advance()
     }
+
+    // Starting the Metronome tab stops this engine (one engine at a time); end the
+    // session too, so it doesn't keep counting practice time in silence.
+    watch(metronome.isRunning, (running) => {
+        if (!running && isActive.value) stop()
+    })
 
     onScopeDispose(stop) // clean up if the component unmounts mid-session
 
