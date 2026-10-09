@@ -1,47 +1,61 @@
 import { computed } from 'vue'
 import { state } from './useProgress'
 import { todayISO, startOfWeekISO } from '../lib/storage'
+import { formatDuration, humanDuration } from './useSessionLog'
 
 /**
  * Daily / weekly practice challenges.
  *
- * Challenges are entirely DERIVED from the practice history in `state.dailySeconds` —
- * nothing extra is stored. Progress and completion recompute reactively, and daily/
+ * Challenges are entirely DERIVED from the practice history in `state.dailySeconds`,
+ * so nothing extra is stored. Progress and completion recompute reactively, and daily/
  * weekly targets "reset" automatically because they only ever read today's bucket or
  * this week's buckets.
+ *
+ * Targets come from the profile's goals (set during onboarding). Without goals, the
+ * original defaults apply.
  */
 
-const DEFINITIONS = [
-  {
-    id: 'daily-10',
-    period: 'Daily',
-    title: 'Warm-up',
-    description: 'Practice 10 minutes today',
-    compute: (ctx) => ({ current: ctx.todaySeconds, target: 600, unit: 'time' }),
-  },
-  {
-    id: 'weekly-days',
-    period: 'Weekly',
-    title: 'Consistency',
-    description: 'Practice on 5 days this week',
-    compute: (ctx) => ({ current: ctx.weekDays, target: 5, unit: 'days' }),
-  },
-  {
-    id: 'weekly-time',
-    period: 'Weekly',
-    title: 'Put in the hours',
-    description: 'Practice 2 hours this week',
-    compute: (ctx) => ({ current: ctx.weekSeconds, target: 7200, unit: 'time' }),
-  },
-]
+const DEFAULT_TARGETS = { dailySeconds: 600, weeklyDays: 5, weeklySeconds: 7200 }
+
+/** Challenge targets for the current profile goals. */
+export function challengeTargets(goals = state.profile?.goals) {
+  if (!goals) return DEFAULT_TARGETS
+  return {
+    dailySeconds: goals.minutesPerDay * 60,
+    weeklyDays: goals.daysPerWeek,
+    weeklySeconds: goals.minutesPerDay * goals.daysPerWeek * 60,
+  }
+}
+
+function buildDefinitions(t) {
+  return [
+    {
+      id: 'daily-time',
+      period: 'Daily',
+      title: 'Warm-up',
+      description: `Practice ${humanDuration(t.dailySeconds)} today`,
+      compute: (ctx) => ({ current: ctx.todaySeconds, target: t.dailySeconds, unit: 'time' }),
+    },
+    {
+      id: 'weekly-days',
+      period: 'Weekly',
+      title: 'Consistency',
+      description: `Practice on ${t.weeklyDays} day${t.weeklyDays === 1 ? '' : 's'} this week`,
+      compute: (ctx) => ({ current: ctx.weekDays, target: t.weeklyDays, unit: 'days' }),
+    },
+    {
+      id: 'weekly-time',
+      period: 'Weekly',
+      title: 'Put in the hours',
+      description: `Practice ${humanDuration(t.weeklySeconds)} this week`,
+      compute: (ctx) => ({ current: ctx.weekSeconds, target: t.weeklySeconds, unit: 'time' }),
+    },
+  ]
+}
 
 function formatProgress(current, target, unit) {
   if (unit === 'days') return `${Math.floor(current)} / ${target} days`
-  // time, in minutes or hours depending on the target size
-  if (target >= 3600) {
-    return `${(current / 3600).toFixed(1)} / ${(target / 3600).toFixed(1)} h`
-  }
-  return `${Math.floor(current / 60)} / ${Math.round(target / 60)} min`
+  return `${formatDuration(current)} / ${formatDuration(target)}`
 }
 
 export function useChallenges() {
@@ -59,7 +73,7 @@ export function useChallenges() {
       }
     }
 
-    return DEFINITIONS.map((def) => {
+    return buildDefinitions(challengeTargets()).map((def) => {
       const { current, target, unit } = def.compute(ctx)
       const percent = Math.min(100, (current / target) * 100)
       return {
