@@ -55,6 +55,17 @@ export function formatDuration(totalSeconds) {
   return `${sec}s`
 }
 
+/** Wordier duration for sentences: "20 minutes", "1 hour 40 minutes", "2 hours". */
+export function humanDuration(totalSeconds) {
+  const s = Math.max(0, Math.round(totalSeconds))
+  const h = Math.floor(s / 3600)
+  const m = Math.round((s % 3600) / 60)
+  const parts = []
+  if (h > 0) parts.push(`${h} hour${h === 1 ? '' : 's'}`)
+  if (m > 0) parts.push(`${m} minute${m === 1 ? '' : 's'}`)
+  return parts.length ? parts.join(' ') : '0 minutes'
+}
+
 export function useSessionLog() {
   const sessions = computed(() => [...state.sessions].reverse()) // newest first
   const lifetimeSeconds = computed(() => state.lifetimeSeconds)

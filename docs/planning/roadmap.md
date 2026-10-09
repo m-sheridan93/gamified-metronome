@@ -14,6 +14,8 @@ item reaches "Next".
 - **Session runner**: stepped-tempo blocks, block editor, goal-BPM ramp builder,
   completion cues (PR #7).
 - **Challenges**: daily + weekly auto challenges derived from practice history (PR #9).
+- **Onboarding + profile**: first-run setup (skippable), editable from the profile
+  button; goals drive the challenge targets. Stored on-device.
 - **Saved presets**: name and save a session plan, auto-load the last one used, update
   or delete it; offered after each session.
 - **Session logging + History tab**: every free or runner session is recorded with an id
@@ -35,9 +37,9 @@ item reaches "Next".
    opens on your most recently used preset, with load, update, and delete.
 3. ~~Session logging + history~~ Done. Runner and free practice both feed lifetime
    hours, the streak, and challenges.
-4. **Light onboarding**: instruments, level, genres, weekly/daily practice goals, what
-   you like to practice. Build after presets, because it configures them (goals set
-   challenge targets; preferences seed presets).
+4. ~~Light onboarding~~ Done (on-device). Instruments, level, genres, focus areas, and
+   goals; goals set the challenge targets. Using answers to suggest presets is a
+   possible follow-up.
 
 ## Later — content & reward polish
 
