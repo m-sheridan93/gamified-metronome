@@ -1,6 +1,7 @@
 import { computed } from 'vue'
 import { state, persistNow } from './useProgress'
 import { startOfWeekISO } from '../lib/storage'
+import { newId } from '../lib/ids'
 
 /**
  * Practice session log.
@@ -15,13 +16,6 @@ import { startOfWeekISO } from '../lib/storage'
  */
 
 const MIN_LOGGED_SECONDS = 10 // ignore accidental start/stop taps
-
-// crypto.randomUUID only exists in secure contexts (https / localhost), so fall back
-// for plain-http testing such as opening the dev server on a phone over wifi.
-function newId() {
-  if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID()
-  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`
-}
 
 /**
  * Start timing a practice session. Returns a handle; call handle.end(extra) when it

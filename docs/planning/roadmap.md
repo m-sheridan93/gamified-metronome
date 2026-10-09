@@ -14,6 +14,8 @@ item reaches "Next".
 - **Session runner**: stepped-tempo blocks, block editor, goal-BPM ramp builder,
   completion cues (PR #7).
 - **Challenges**: daily + weekly auto challenges derived from practice history (PR #9).
+- **Saved presets**: name and save a session plan, auto-load the last one used, update
+  or delete it; offered after each session.
 - **Session logging + History tab**: every free or runner session is recorded with an id
   and timestamps; the History tab shows lifetime hours, this week, and a session list.
 - **Shop / studio**: built, then hidden from the UI along with the points card (files
@@ -29,8 +31,8 @@ item reaches "Next".
 ## Next: the heart of the method (all solo, high personal value)
 
 1. ~~Stepped-tempo session runner~~ Done (PR #7).
-2. **Savable presets**: after a runner session, "save this?", then reload "Master of
-   Puppets solo, 10 min" next time from a presets list.
+2. ~~Savable presets~~ Done. After a session you're offered to save it; the Session tab
+   opens on your most recently used preset, with load, update, and delete.
 3. ~~Session logging + history~~ Done. Runner and free practice both feed lifetime
    hours, the streak, and challenges.
 4. **Light onboarding**: instruments, level, genres, weekly/daily practice goals, what
