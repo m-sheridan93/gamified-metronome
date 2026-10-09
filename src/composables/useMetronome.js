@@ -1,5 +1,17 @@
 import { ref, watch, onScopeDispose } from 'vue'
 
+export const MIN_BPM = 20
+export const MAX_BPM = 300
+
+// Sound preferences are shared by every engine (Metronome tab and Session runner),
+// so the level picked on the Metronome tab also applies to sessions.
+const volume = ref(1)
+const soundType = ref('Tick')
+
+// Only one engine sounds at a time: starting one stops whichever was running, so the
+// two tabs never click over each other or count the same practice time twice.
+let stopActiveEngine = null
+
 /**
  * Metronome audio engine.
  *
@@ -10,14 +22,10 @@ import { ref, watch, onScopeDispose } from 'vue'
  * setInterval, so it does not drift.
  */
 export function useMetronome() {
-  const MIN_BPM = 20
-  const MAX_BPM = 300
   const LOOKAHEAD_MS = 25      // how often the scheduler wakes
   const SCHEDULE_AHEAD = 0.1   // how far ahead (seconds) we schedule audio
 
   const bpm = ref(100)
-  const volume = ref(1)
-  const soundType = ref('Tick')
   const isRunning = ref(false)
   const currentBeat = ref(0)   // index of the most recently sounded beat
 
@@ -48,31 +56,34 @@ export function useMetronome() {
     return ctx
   }
 
-  /** Synthesise one click at a precise audio-clock time. */
-  function scheduleClick(beatNumber, time) {
+  /**
+   * Play a sine tone at an audio-clock time. `shape(gainParam, level)` adds any
+   * envelope after the initial level is set; returns the tone's duration in seconds.
+   */
+  function tone(frequency, time, shape) {
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
     osc.type = 'sine'
-    osc.frequency.value = 1000
-
+    osc.frequency.value = frequency
     // exponentialRampToValueAtTime cannot touch 0, so floor the level.
     const level = Math.max(volume.value, 0.0001)
     gain.gain.setValueAtTime(level, time)
-
-    if (soundType.value === 'Tick') {
-      // Traditional click: quick attack then exponential decay.
-      gain.gain.exponentialRampToValueAtTime(level * 0.3, time + 0.02)
-      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.07)
-      osc.start(time)
-      osc.stop(time + 0.07)
-    } else {
-      // Beep: flat tone.
-      osc.start(time)
-      osc.stop(time + 0.05)
-    }
-
+    const duration = shape(gain.gain, level)
     osc.connect(gain)
     gain.connect(ctx.destination)
+    osc.start(time)
+    osc.stop(time + duration)
+  }
+
+  /** Synthesise one click at a precise audio-clock time. */
+  function scheduleClick(beatNumber, time) {
+    tone(1000, time, (g, level) => {
+      if (soundType.value !== 'Tick') return 0.05 // Beep: flat tone.
+      // Traditional click: quick attack then exponential decay.
+      g.exponentialRampToValueAtTime(level * 0.3, time + 0.02)
+      g.exponentialRampToValueAtTime(0.001, time + 0.07)
+      return 0.07
+    })
     notesInQueue.push({ beat: beatNumber, time })
   }
 
@@ -89,7 +100,7 @@ export function useMetronome() {
 
   /**
    * Visual sync loop: because audio is scheduled ahead of time, drive UI off
-   * the queue — advance currentBeat only once a beat's time has actually passed.
+   * the queue: advance currentBeat only once a beat's time has actually passed.
    */
   function drawLoop() {
     const now = ctx ? ctx.currentTime : 0
@@ -103,6 +114,8 @@ export function useMetronome() {
 
   function start() {
     if (isRunning.value) return
+    if (stopActiveEngine) stopActiveEngine()
+    stopActiveEngine = stop
     ensureContext()
     beatCounter = 0
     currentBeat.value = 0
@@ -121,6 +134,7 @@ export function useMetronome() {
     rafId = null
     notesInQueue.length = 0
     isRunning.value = false
+    if (stopActiveEngine === stop) stopActiveEngine = null
   }
 
   function toggle() {
@@ -134,19 +148,11 @@ export function useMetronome() {
 
   /** Play a one-off cue tone (block change / session end), through the same context. */
   function playCue(frequency = 2000, duration = 0.15, delay = 0) {
-    const audio = ensureContext()
-    const t = audio.currentTime + delay
-    const osc = audio.createOscillator()
-    const gain = audio.createGain()
-    osc.type = 'sine'
-    osc.frequency.value = frequency
-    const level = Math.max(volume.value, 0.0001)
-    gain.gain.setValueAtTime(level, t)
-    gain.gain.exponentialRampToValueAtTime(0.001, t + duration)
-    osc.connect(gain)
-    gain.connect(audio.destination)
-    osc.start(t)
-    osc.stop(t + duration)
+    const t = ensureContext().currentTime + delay
+    tone(frequency, t, (g) => {
+      g.exponentialRampToValueAtTime(0.001, t + duration)
+      return duration
+    })
   }
 
   // Tear down timers and the audio context when the owning scope unmounts.

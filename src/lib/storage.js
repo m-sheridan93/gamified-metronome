@@ -20,7 +20,7 @@ export function defaults() {
     pointsProgressSeconds: 0,  // practice seconds banked towards the next point
     // Practice history
     lifetimeSeconds: 0,        // total practice time ever
-    dailySeconds: {},          // { 'YYYY-MM-DD': seconds } — powers challenges
+    dailySeconds: {},          // { 'YYYY-MM-DD': seconds }, powers challenges
     sessions: [],              // logged practice sessions, oldest first (see useSessionLog)
     presets: [],               // saved session plans (see usePresets)
     profile: null,             // onboarding answers and goals (see useProfile)
@@ -50,7 +50,7 @@ export function loadState() {
       return legacy
     }
   } catch (e) {
-    // Corrupt/unavailable storage — fall back to a clean slate rather than crash.
+    // Corrupt/unavailable storage: fall back to a clean slate rather than crash.
     console.warn('Failed to load progress, starting fresh:', e)
   }
   return defaults()

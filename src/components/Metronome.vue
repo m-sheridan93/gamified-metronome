@@ -57,7 +57,7 @@
 
 <script setup>
 import {ref, watch, onUnmounted} from 'vue'
-import MetronomeControls from './MetonomeControls.vue'
+import MetronomeControls from './MetronomeControls.vue'
 import {useMetronome} from '../composables/useMetronome'
 import {useProgress} from '../composables/useProgress'
 import {beginSession} from '../composables/useSessionLog'

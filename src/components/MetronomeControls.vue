@@ -5,15 +5,15 @@
         @update:modelValue="emit('update:bpm', $event)"
         label="BPM"
         type="number"
-        min="20"
-        max="300"
+        :min="MIN_BPM"
+        :max="MAX_BPM"
         class="mt-2"
     />
     <v-slider
         :model-value="bpm"
         @update:modelValue="emit('update:bpm', $event)"
-        :min="20"
-        :max="300"
+        :min="MIN_BPM"
+        :max="MAX_BPM"
         step="1"
         label="BPM"
         class="mt-4"
@@ -40,6 +40,8 @@
 </template>
 
 <script setup>
-const props = defineProps(['bpm', 'volume', 'soundType'])
+import {MIN_BPM, MAX_BPM} from '../composables/useMetronome'
+
+defineProps(['bpm', 'volume', 'soundType'])
 const emit = defineEmits(['update:bpm', 'update:volume', 'update:soundType'])
 </script>

@@ -66,7 +66,8 @@
 
 <script setup>
 import {computed} from 'vue'
-import {useSessionLog, formatDuration} from '../composables/useSessionLog'
+import {useSessionLog} from '../composables/useSessionLog'
+import {formatDuration, bpmRange} from '../lib/format'
 
 const {sessions, lifetimeSeconds, weekSeconds, sessionCount} = useSessionLog()
 
@@ -93,7 +94,7 @@ const rows = computed(() => sessions.value.map((s) => {
     typeLabel: isRunner ? 'Session' : 'Free',
     typeIcon: isRunner ? 'mdi-playlist-play' : 'mdi-metronome',
     bpmLabel: isRunner
-        ? (s.bpmLow === s.bpmHigh ? `${s.bpmLow}` : `${s.bpmLow} → ${s.bpmHigh}`)
+        ? bpmRange(s.bpmLow, s.bpmHigh)
         : (s.bpm ? `${s.bpm}` : ''),
     result: isRunner
         ? (s.completed ? 'Completed' : `Stopped at ${s.blocksPlayed}/${s.blockCount}`)
