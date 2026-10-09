@@ -1,6 +1,7 @@
 import { computed } from 'vue'
 import { state, persistNow } from './useProgress'
 import { newId } from '../lib/ids'
+import { bpmRange } from '../lib/format'
 
 /**
  * Saved session plans ("presets"), e.g. "Master of Puppets solo, 10 min".
@@ -31,8 +32,7 @@ export function suggestName(rows) {
   const low = Math.min(...bpms)
   const high = Math.max(...bpms)
   const minutes = Math.round(rows.reduce((sum, r) => sum + Number(r.minutes || 0), 0) * 10) / 10
-  const range = low === high ? `${low} bpm` : `${low} → ${high} bpm`
-  return `${range}, ${minutes} min`
+  return `${bpmRange(low, high)} bpm, ${minutes} min`
 }
 
 /** Picker value for the built-in starter plan (not a stored preset). */

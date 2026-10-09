@@ -60,7 +60,7 @@
           <div class="text-subtitle-1 mb-3">Here's what you'll aim for:</div>
           <v-list density="compact" class="pa-0">
             <v-list-item prepend-icon="mdi-calendar-today" :title="`Practice ${humanDuration(targets.dailySeconds)} a day`"/>
-            <v-list-item prepend-icon="mdi-calendar-week" :title="`On ${targets.weeklyDays} day${targets.weeklyDays === 1 ? '' : 's'} a week`"/>
+            <v-list-item prepend-icon="mdi-calendar-week" :title="`On ${plural(targets.weeklyDays, 'day')} a week`"/>
             <v-list-item prepend-icon="mdi-clock-outline" :title="`That's ${humanDuration(targets.weeklySeconds)} a week`"/>
           </v-list>
           <div class="text-body-2 text-medium-emphasis mt-4">
@@ -90,7 +90,7 @@ import {
   useProfile, INSTRUMENTS, LEVELS, GENRES, FOCUS_AREAS, DAY_OPTIONS, MINUTE_OPTIONS,
 } from '../composables/useProfile'
 import {challengeTargets} from '../composables/useChallenges'
-import {humanDuration} from '../composables/useSessionLog'
+import {humanDuration, plural} from '../lib/format'
 
 const props = defineProps({modelValue: Boolean})
 const emit = defineEmits(['update:modelValue'])

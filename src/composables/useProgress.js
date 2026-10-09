@@ -1,16 +1,17 @@
 import { reactive, computed } from 'vue'
-import { loadState, saveState, todayISO, daysBetween } from '../lib/storage'
+import { loadState, saveState, todayISO, daysBetween, startOfWeekISO } from '../lib/storage'
+import { formatClock } from '../lib/format'
 
 /**
  * Player progress: points economy, practice time, streak.
  *
- * A single module-scoped reactive `state` is the app-wide source of truth — every
+ * A single module-scoped reactive `state` is the app-wide source of truth: every
  * component that calls useProgress() shares it. This is the zero-dependency
  * equivalent of a Pinia store; if state needs grow, it can be lifted into Pinia
  * without changing the public surface here.
  */
 
-const POINTS_THRESHOLD_SECONDS = 60 // practice time earned per point — tune here
+const POINTS_THRESHOLD_SECONDS = 60 // practice time earned per point (tune here)
 
 // Shared so sibling composables (e.g. useStudio) read/write the same save blob.
 export const state = reactive(loadState())
@@ -57,7 +58,7 @@ function tick(deltaSeconds, { session = true } = {}) {
   persistSoon()
 }
 
-/** Call when a practice session begins — updates the daily streak once per day. */
+/** Call when a practice session begins: updates the daily streak once per day. */
 function startSession() {
   const today = todayISO()
   if (state.lastPracticeDate === today) return // already counted today
@@ -68,7 +69,7 @@ function startSession() {
     const diff = daysBetween(state.lastPracticeDate, today)
     if (diff === 1) state.streak += 1        // consecutive day
     else if (diff > 1) state.streak = 1      // streak broken
-    else state.streak = Math.max(state.streak, 1) // clock moved back — don't punish
+    else state.streak = Math.max(state.streak, 1) // clock moved back, don't punish
   }
   state.lastPracticeDate = today
 
@@ -95,6 +96,20 @@ function spend(points) {
   return true
 }
 
+/** Practice this week (since Monday): total seconds and number of days with any practice. */
+export function weekTotals() {
+  const weekStart = startOfWeekISO()
+  let seconds = 0
+  let days = 0
+  for (const [date, secs] of Object.entries(state.dailySeconds)) {
+    if (date >= weekStart && secs > 0) {
+      seconds += secs
+      days += 1
+    }
+  }
+  return { seconds, days }
+}
+
 /** Record the current time for idle-earning calculations (phase 5). */
 function markSeen() {
   state.lastSeenAt = Date.now()
@@ -109,12 +124,7 @@ export function useProgress() {
     streak: computed(() => state.streak),
     // current session
     sessionPoints: computed(() => state.sessionPoints),
-    formattedTime: computed(() => {
-      const total = Math.floor(state.sessionSeconds)
-      const m = Math.floor(total / 60)
-      const s = total % 60
-      return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`
-    }),
+    formattedTime: computed(() => formatClock(state.sessionSeconds)),
     // points progress
     pointsThresholdSeconds: POINTS_THRESHOLD_SECONDS,
     progressToNextPoint: computed(

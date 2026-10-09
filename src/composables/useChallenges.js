@@ -1,7 +1,7 @@
 import { computed } from 'vue'
-import { state } from './useProgress'
-import { todayISO, startOfWeekISO } from '../lib/storage'
-import { formatDuration, humanDuration } from './useSessionLog'
+import { state, weekTotals } from './useProgress'
+import { todayISO } from '../lib/storage'
+import { formatDuration, humanDuration, plural } from '../lib/format'
 
 /**
  * Daily / weekly practice challenges.
@@ -40,7 +40,7 @@ function buildDefinitions(t) {
       id: 'weekly-days',
       period: 'Weekly',
       title: 'Consistency',
-      description: `Practice on ${t.weeklyDays} day${t.weeklyDays === 1 ? '' : 's'} this week`,
+      description: `Practice on ${plural(t.weeklyDays, 'day')} this week`,
       compute: (ctx) => ({ current: ctx.weekDays, target: t.weeklyDays, unit: 'days' }),
     },
     {
@@ -60,17 +60,11 @@ function formatProgress(current, target, unit) {
 
 export function useChallenges() {
   const challenges = computed(() => {
-    const weekStart = startOfWeekISO()
+    const week = weekTotals()
     const ctx = {
       todaySeconds: state.dailySeconds[todayISO()] || 0,
-      weekSeconds: 0,
-      weekDays: 0,
-    }
-    for (const [date, secs] of Object.entries(state.dailySeconds)) {
-      if (date >= weekStart && secs > 0) {
-        ctx.weekSeconds += secs
-        ctx.weekDays += 1
-      }
+      weekSeconds: week.seconds,
+      weekDays: week.days,
     }
 
     return buildDefinitions(challengeTargets()).map((def) => {

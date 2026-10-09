@@ -55,7 +55,7 @@
 
         <!-- Auto-build from a goal tempo -->
         <div class="d-flex align-center mb-3" style="gap: 8px;">
-          <v-text-field v-model.number="goalBpm" label="Goal BPM" type="number" min="20" max="300"
+          <v-text-field v-model.number="goalBpm" label="Goal BPM" type="number" :min="MIN_BPM" :max="MAX_BPM"
                         density="compact" hide-details style="max-width: 120px;"/>
           <v-text-field v-model.number="goalMinutes" label="Minutes" type="number" min="1"
                         density="compact" hide-details style="max-width: 120px;"/>
@@ -71,7 +71,7 @@
             class="d-flex align-center mb-2"
             style="gap: 8px;"
         >
-          <v-text-field v-model.number="row.bpm" label="BPM" type="number" min="20" max="300"
+          <v-text-field v-model.number="row.bpm" label="BPM" type="number" :min="MIN_BPM" :max="MAX_BPM"
                         density="compact" hide-details style="max-width: 90px;"/>
           <v-text-field v-model.number="row.minutes" label="Min" type="number" min="0" step="0.5"
                         density="compact" hide-details style="max-width: 90px;"/>
@@ -141,6 +141,9 @@
 import {ref, computed, watch} from 'vue'
 import {useSessionRunner} from '../composables/useSessionRunner'
 import {usePresets, sameBlocks, suggestName, DEFAULT_SELECTION} from '../composables/usePresets'
+import {MIN_BPM, MAX_BPM} from '../composables/useMetronome'
+import {MIN_LOGGED_SECONDS} from '../composables/useSessionLog'
+import {formatClock} from '../lib/format'
 
 const {
   presets, savePreset, deletePreset, markUsed, getPreset, nameExists,
@@ -266,13 +269,13 @@ function startSession() {
 }
 
 // When a session ends, offer to save its plan if it isn't already saved unchanged.
-// Skip very short runs (accidental start/stop).
+// Skip runs too short to be logged (accidental start/stop).
 const showSavePrompt = ref(false)
 let sessionStartedAt = 0
 
 watch(isActive, (active, wasActive) => {
   if (!wasActive || active) return
-  const ranLongEnough = Date.now() - sessionStartedAt >= 10000
+  const ranLongEnough = Date.now() - sessionStartedAt >= MIN_LOGGED_SECONDS * 1000
   const unsaved = !selectedPreset.value || isEdited.value
   showSavePrompt.value = ranLongEnough && unsaved
 })
@@ -281,14 +284,12 @@ const promptText = computed(() => (isEdited.value
     ? `Save your changes to "${selectedPreset.value.name}"?`
     : 'Good session. Save it as a preset for next time?'))
 
-const formattedTime = computed(() => {
-  const s = Math.max(0, secondsLeft.value)
-  return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
-})
+const formattedTime = computed(() => formatClock(secondsLeft.value))
 
 const blockProgress = computed(() => {
   if (!currentBlock.value) return 0
   const total = currentBlock.value.seconds
+  if (!(total > 0)) return 100 // zero-length block: nothing to count down
   return ((total - secondsLeft.value) / total) * 100
 })
 </script>
