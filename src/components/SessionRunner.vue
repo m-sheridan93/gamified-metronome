@@ -30,20 +30,18 @@
         <div class="d-flex align-center" style="gap: 8px;">
           <v-select
               :model-value="selectedPresetId"
-              :items="presets"
+              :items="pickerItems"
               item-title="name"
               item-value="id"
               label="Preset"
               density="compact"
               hide-details
-              clearable
-              no-data-text="No saved presets yet"
               @update:model-value="loadPreset"
           />
           <v-btn variant="tonal" size="small" :disabled="rows.length === 0" @click="openSaveDialog">
             <v-icon start>mdi-content-save-outline</v-icon> Save
           </v-btn>
-          <v-btn v-if="selectedPresetId" icon="mdi-delete-outline" variant="text" size="small"
+          <v-btn v-if="selectedPreset" icon="mdi-delete-outline" variant="text" size="small"
                  color="error" @click="deleteDialog = true"/>
         </div>
         <div class="text-caption text-medium-emphasis mt-1 mb-3" style="min-height: 1.25em;">
@@ -142,9 +140,12 @@
 <script setup>
 import {ref, computed, watch} from 'vue'
 import {useSessionRunner} from '../composables/useSessionRunner'
-import {usePresets, sameBlocks, suggestName} from '../composables/usePresets'
+import {usePresets, sameBlocks, suggestName, DEFAULT_SELECTION} from '../composables/usePresets'
 
-const {presets, mostRecent, savePreset, deletePreset, markUsed, getPreset, nameExists} = usePresets()
+const {
+  presets, savePreset, deletePreset, markUsed, getPreset, nameExists,
+  openSelection, rememberSelection,
+} = usePresets()
 
 const DEFAULT_ROWS = [
   {bpm: 60, minutes: 2, label: 'Slow'},
@@ -157,17 +158,29 @@ function copyBlocks(blocks) {
   return blocks.map((b) => ({...b}))
 }
 
-// Open on the most recently used preset, so next time you can just press Start.
-const selectedPresetId = ref(mostRecent.value?.id ?? null)
-const rows = ref(copyBlocks(mostRecent.value ? mostRecent.value.blocks : DEFAULT_ROWS))
+// The picker always offers the built-in default plan first, then saved presets.
+const pickerItems = computed(() => [
+  {id: DEFAULT_SELECTION, name: 'Default plan'},
+  ...presets.value,
+])
 
-const selectedPreset = computed(() => (selectedPresetId.value ? getPreset(selectedPresetId.value) : null))
+function blocksFor(id) {
+  return id === DEFAULT_SELECTION ? DEFAULT_ROWS : (getPreset(id)?.blocks ?? DEFAULT_ROWS)
+}
+
+// Open on whatever was last selected (a preset or the default plan).
+const selectedPresetId = ref(openSelection.value)
+const rows = ref(copyBlocks(blocksFor(selectedPresetId.value)))
+
+// The selected saved preset, or null when the default plan is selected.
+const selectedPreset = computed(() => getPreset(selectedPresetId.value))
 const isEdited = computed(() => !!selectedPreset.value && !sameBlocks(rows.value, selectedPreset.value.blocks))
 
 function loadPreset(id) {
-  selectedPresetId.value = id ?? null
-  const p = id ? getPreset(id) : null
-  if (p) rows.value = copyBlocks(p.blocks)
+  const target = id ?? DEFAULT_SELECTION
+  selectedPresetId.value = target
+  rows.value = copyBlocks(blocksFor(target))
+  rememberSelection(target)
 }
 
 // Save dialog. Prefills the loaded preset's name, or a name built from the plan.
@@ -184,16 +197,17 @@ function confirmSave() {
   if (!saveName.value.trim()) return
   const p = savePreset(saveName.value, rows.value)
   selectedPresetId.value = p.id
+  rememberSelection(p.id)
   saveDialog.value = false
   showSavePrompt.value = false
 }
 
-// Delete dialog.
+// Delete dialog. Afterwards, fall back to the default plan.
 const deleteDialog = ref(false)
 function confirmDelete() {
   deletePreset(selectedPresetId.value)
-  selectedPresetId.value = null
   deleteDialog.value = false
+  loadPreset(DEFAULT_SELECTION)
 }
 
 // Goal-based auto-builder inputs.
@@ -241,7 +255,7 @@ function autoBuild() {
 function startSession() {
   showSavePrompt.value = false
   sessionStartedAt = Date.now()
-  if (selectedPresetId.value) markUsed(selectedPresetId.value)
+  if (selectedPreset.value) markUsed(selectedPreset.value.id)
   // Convert the editor's minutes into the engine's seconds, then run.
   blocks.value = rows.value.map((r) => ({
     bpm: Number(r.bpm),

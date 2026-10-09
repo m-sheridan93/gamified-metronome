@@ -35,6 +35,9 @@ export function suggestName(rows) {
   return `${range}, ${minutes} min`
 }
 
+/** Picker value for the built-in starter plan (not a stored preset). */
+export const DEFAULT_SELECTION = 'default'
+
 function findByName(name) {
   const key = name.trim().toLowerCase()
   return state.presets.find((p) => p.name.toLowerCase() === key) ?? null
@@ -97,8 +100,24 @@ export function usePresets() {
     return state.presets.find((p) => p.id === id) ?? null
   }
 
+  // Which plan the Session tab opens on: the last selection (a preset id or the
+  // default plan). Saves from before this setting existed fall back to the most
+  // recently used preset.
+  const openSelection = computed(() => {
+    const remembered = state.settings.sessionPresetId
+    if (remembered === DEFAULT_SELECTION) return DEFAULT_SELECTION
+    if (remembered && getPreset(remembered)) return remembered
+    return mostRecent.value?.id ?? DEFAULT_SELECTION
+  })
+
+  function rememberSelection(id) {
+    state.settings.sessionPresetId = id
+    persistNow()
+  }
+
   return {
     presets, mostRecent, savePreset, deletePreset, markUsed, getPreset,
+    openSelection, rememberSelection,
     nameExists: (name) => !!findByName(name),
   }
 }
