@@ -23,6 +23,7 @@ export function defaults() {
     dailySeconds: {},          // { 'YYYY-MM-DD': seconds } — powers challenges
     sessions: [],              // logged practice sessions, oldest first (see useSessionLog)
     presets: [],               // saved session plans (see usePresets)
+    profile: null,             // onboarding answers and goals (see useProfile)
     streak: 0,
     lastPracticeDate: '',      // local YYYY-MM-DD
     consistencyBonus: 0,       // last streak bonus awarded (for the UI chip)
