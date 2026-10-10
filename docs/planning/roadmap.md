@@ -29,6 +29,13 @@ item reaches "Next".
 - ~~Decide the orphaned Practice Points card~~ Done: hidden (PR #8).
 - **Free session mode**: largely covered now that the Metronome tab logs sessions.
   Revisit only if a dedicated "just practice" timer is still wanted.
+- **Pause button for sessions**: the Session runner can only Stop (which ends the session)
+  or Skip. Add Pause / Resume that freezes the countdown and the metronome and keeps your
+  place in the current block. Notes for building it:
+  - Paused time shouldn't count towards practice totals, and the session log's duration
+    should count only active time (it's currently start-to-end clock time).
+  - The runner treats its engine stopping as "end the session" (that's how the Metronome
+    tab takes over), so a pause must be told apart from that, or pausing would end it.
 
 ## Next: the heart of the method (all solo, high personal value)
 
