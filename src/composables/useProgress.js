@@ -26,12 +26,19 @@ export async function initProgress() {
   Object.assign(state, await loadState())
   loaded = true
 
-  // Write pending changes straight away when the page is hidden or closed: on mobile
+  // Write a pending save straight away when the page is hidden or closed: on mobile
   // the OS may kill a backgrounded app before the debounce timer fires.
   document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'hidden') persistNow()
+    if (document.visibilityState === 'hidden') flushPending()
   })
-  window.addEventListener('pagehide', persistNow)
+  window.addEventListener('pagehide', flushPending)
+}
+
+// Only writes if a debounced save is waiting. Saving unconditionally on close would
+// write the in-memory copy back over storage the user just cleared (e.g. clearing
+// site data with the app open).
+function flushPending() {
+  if (saveTimer) persistNow()
 }
 
 // Debounced persistence: practice time ticks ~10x/sec, so avoid hammering storage.
