@@ -43,6 +43,18 @@ item reaches "Next".
 
 ## Later: content & reward polish
 
+- **Song-length steps for the goal builder**: build a session around whole plays of a
+  piece instead of 1-minute blocks. Example: a 3-minute song, 20 minutes of practice, and
+  only 4 tempo changes, so each tempo gets complete plays of the song rather than being
+  cut off mid-song.
+  - Inputs: goal BPM, total minutes, number of tempo steps, and an optional song length.
+    Block length = total / steps, snapped to whole plays: 20 / 4 = 5 min is 1.7 plays, so
+    round to 2 plays (6 min) per step, giving 4 x 6 = 24 min. Show the adjusted total so
+    the user can accept it or change the number of steps.
+  - Open question: how to display it. Ideas: count in plays instead of a minute countdown
+    ("Play 2 of 2 at 180 bpm"); a minutes / plays switch on each block in the editor; a
+    small tempo staircase preview of the plan before starting (built from standard
+    components, so it fits the no-AI-visuals rule).
 - **Badges / medals / rewards**: plan now, but needs **human-designed art** (no AI
   visuals), so hold the visual polish until assets exist. Logic can use `mdi` placeholders.
 - **Practice tips / guided templates**: curated, science-backed guidance shown during
