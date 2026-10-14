@@ -63,23 +63,63 @@ This is a one-time hump (provisioning, signing, first submission), not ongoing w
 
 ## Prerequisites checklist
 
-- [ ] Mac with Xcode installed (iOS): ✓ available.
+- [x] Mac with Xcode installed and selected (`sudo xcode-select -s
+  /Applications/Xcode.app/Contents/Developer`, licence accepted, `xcodebuild
+  -runFirstLaunch`). Currently Xcode 16.4 with the iOS 18.5 simulator.
+- [x] ~~CocoaPods~~ Not needed: the iOS project uses Swift Package Manager.
 - [ ] Android Studio installed (Android).
-- [ ] CocoaPods installed.
-- [ ] Apple Developer Program membership ($99/yr): needed for device testing + App Store.
+- [ ] Apple Developer Program membership ($99/yr): only needed for TestFlight and the
+  App Store. A free Apple ID is enough to run the app on your own iPhone (those builds
+  expire after 7 days; re-run from Xcode to refresh).
 - [ ] Google Play Console account ($25 one-time).
 
-## Rough setup (when the time comes)
+## iOS: what's set up
+
+- Capacitor 8 with an Xcode project in `ios/` (Swift Package Manager, no CocoaPods).
+- App ID `com.michaelsheridan.gamifiedmetronome` and name "Gamified Metronome", both
+  placeholders until the app is named (the ID only becomes permanent on App Store release).
+- `ios.contentInset: "always"` in `capacitor.config.json`, so content stays inside the safe
+  area (clear of the status bar, Dynamic Island, and home indicator).
+- Verified in the iPhone 16 simulator (iOS 18.5): the app runs, onboarding and the main
+  tabs render, and saved data survives a force-quit and relaunch.
+
+### Day-to-day workflow
+
+After changing the web app, rebuild and copy it into the iOS project, then open Xcode:
 
 ```bash
-npm install @capacitor/core @capacitor/cli
-npx cap init
-npm install @capacitor/ios @capacitor/android
-npm run build
-npx cap add ios && npx cap add android
-# iterate:
-npm run build && npx cap sync && npx cap open ios   # or: open android
+npm run ios
 ```
+
+That runs `vite build && cap sync ios && cap open ios`. From Xcode, pick a simulator or
+your iPhone and press Run.
+
+### Running on your own iPhone (free Apple ID)
+
+1. Plug the iPhone into the Mac, unlock it, and tap **Trust This Computer**.
+2. In Xcode (`npm run ios`), select the **App** target, then **Signing & Capabilities**.
+   Under **Team**, add your Apple ID and choose your **Personal Team**.
+3. Choose your iPhone as the run destination at the top of the window and press **Run**.
+4. On the iPhone, turn on **Developer Mode** when asked (Settings > Privacy & Security >
+   Developer Mode; it restarts the phone), then run again.
+5. The first time, iOS blocks the app as from an "untrusted developer": go to Settings >
+   General > VPN & Device Management, trust your Apple ID, and open the app.
+
+### Mobile polish (not done yet)
+
+- **Status bar area**: the band above the blue app bar is white; extend the app bar colour
+  behind the status bar (`viewport-fit=cover` plus safe-area padding).
+- **Navigation**: four tabs don't fit across a phone ("Challenges" is cut off). A bottom
+  tab bar is the usual iOS pattern.
+- **Audio session**: by default, web audio on iOS goes silent with the ring/silent switch
+  and stops music playing in other apps. A metronome should probably keep playing with the
+  switch on, and mix with music from another app so you can play along (`AVAudioSession`
+  `.playback` with `.mixWithOthers`, a few lines in `AppDelegate.swift`). Test on a device.
+- **Keep the screen awake** while practising (keep-awake plugin).
+- **Native storage adapter** (see "What changes in the app" above), plus a one-time
+  migration from WebView `localStorage`.
+- **App icon and launch screen**: currently Capacitor's placeholders; they need
+  human-designed artwork (no AI visuals).
 
 ## Sequencing
 
