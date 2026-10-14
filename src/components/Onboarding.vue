@@ -103,8 +103,9 @@ const STEP_COUNT = 4
 const step = ref(0)
 const answers = ref(currentAnswers())
 
-// Editing an existing profile (vs first-run onboarding).
-const editing = computed(() => !!profile.value)
+// Editing an existing profile (vs first-run onboarding). Fixed when the dialog opens, so
+// the title and buttons don't switch to edit mode while it fades out after Skip / Finish.
+const editing = ref(!!profile.value)
 
 // What the chosen goals turn into, using the same function as the Challenges tab.
 const targets = computed(() => challengeTargets(answers.value.goals))
@@ -114,6 +115,7 @@ watch(() => props.modelValue, (open) => {
   if (open) {
     step.value = 0
     answers.value = currentAnswers()
+    editing.value = !!profile.value
   }
 })
 
@@ -124,6 +126,7 @@ function close() {
 // Forget the saved answers and go through first-run setup again.
 function restartSetup() {
   resetProfile()
+  editing.value = false
   answers.value = currentAnswers()
   step.value = 0
 }
