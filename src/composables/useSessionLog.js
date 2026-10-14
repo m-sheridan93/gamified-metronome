@@ -17,15 +17,31 @@ import { newId } from '../lib/ids'
 export const MIN_LOGGED_SECONDS = 10 // ignore accidental start/stop taps
 
 /**
- * Start timing a practice session. Returns a handle; call handle.end(extra) when it
- * stops. Returns the saved record, or null if it was too short to keep.
+ * Start timing a practice session. Returns a handle: call handle.end(extra) when it
+ * stops (returns the saved record, or null if it was too short to keep), and
+ * handle.pause() / handle.resume() around any breaks.
  */
 export function beginSession(type, details = {}) {
   const startedAt = Date.now()
+  let pausedAt = null // when the current pause began, if paused
+  let pausedMs = 0    // total time spent paused so far
+
+  function resume() {
+    if (pausedAt == null) return
+    pausedMs += Date.now() - pausedAt
+    pausedAt = null
+  }
+
   return {
+    /** Stop the clock; paused time isn't counted in the logged duration. */
+    pause() {
+      if (pausedAt == null) pausedAt = Date.now()
+    },
+    resume,
     end(extra = {}) {
+      resume()
       const endedAt = Date.now()
-      const durationSeconds = Math.round((endedAt - startedAt) / 1000)
+      const durationSeconds = Math.round((endedAt - startedAt - pausedMs) / 1000)
       if (durationSeconds < MIN_LOGGED_SECONDS) return null
       const record = {
         id: newId(),

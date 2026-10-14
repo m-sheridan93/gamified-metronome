@@ -5,15 +5,23 @@
       <!-- Running view -->
       <template v-if="isActive">
         <div class="text-center">
-          <div class="text-overline">Block {{ currentIndex + 1 }} / {{ blocks.length }}</div>
+          <div class="text-overline">
+            Block {{ currentIndex + 1 }} / {{ blocks.length }}<span v-if="isPaused"> · Paused</span>
+          </div>
           <div class="text-h6">{{ currentBlock?.label }}</div>
           <div class="text-h2 my-2">{{ bpm }} <span class="text-h6">bpm</span></div>
-          <div class="text-h4 mb-3">{{ formattedTime }}</div>
+          <div class="text-h4 mb-3" :class="{'text-disabled': isPaused}">{{ formattedTime }}</div>
           <v-progress-linear :model-value="blockProgress" color="primary" height="8" rounded class="mb-4"/>
         </div>
         <div class="text-center">
           <v-btn color="error" variant="outlined" class="mr-2" @click="stop">Stop</v-btn>
-          <v-btn color="primary" @click="skip">Skip</v-btn>
+          <v-btn v-if="isPaused" color="primary" variant="tonal" class="mr-2" @click="resume">
+            <v-icon start>mdi-play</v-icon> Resume
+          </v-btn>
+          <v-btn v-else color="primary" variant="tonal" class="mr-2" @click="pause">
+            <v-icon start>mdi-pause</v-icon> Pause
+          </v-btn>
+          <v-btn color="primary" :disabled="isPaused" @click="skip">Skip</v-btn>
         </div>
       </template>
 
@@ -218,8 +226,8 @@ const goalBpm = ref(null)
 const goalMinutes = ref(10)
 
 const {
-  blocks, isActive, currentIndex, secondsLeft, currentBlock, bpm,
-  start, stop, skip,
+  blocks, isActive, isPaused, currentIndex, secondsLeft, elapsedSeconds, currentBlock, bpm,
+  start, stop, skip, pause, resume,
 } = useSessionRunner([])
 
 function addRow() {
@@ -257,7 +265,6 @@ function autoBuild() {
 
 function startSession() {
   showSavePrompt.value = false
-  sessionStartedAt = Date.now()
   if (selectedPreset.value) markUsed(selectedPreset.value.id)
   // Convert the editor's minutes into the engine's seconds, then run.
   blocks.value = rows.value.map((r) => ({
@@ -269,13 +276,12 @@ function startSession() {
 }
 
 // When a session ends, offer to save its plan if it isn't already saved unchanged.
-// Skip runs too short to be logged (accidental start/stop).
+// Skip runs too short to be logged (accidental start/stop); paused time doesn't count.
 const showSavePrompt = ref(false)
-let sessionStartedAt = 0
 
 watch(isActive, (active, wasActive) => {
   if (!wasActive || active) return
-  const ranLongEnough = Date.now() - sessionStartedAt >= MIN_LOGGED_SECONDS * 1000
+  const ranLongEnough = elapsedSeconds.value >= MIN_LOGGED_SECONDS
   const unsaved = !selectedPreset.value || isEdited.value
   showSavePrompt.value = ranLongEnough && unsaved
 })
