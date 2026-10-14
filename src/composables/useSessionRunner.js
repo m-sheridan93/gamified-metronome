@@ -14,9 +14,11 @@ export function useSessionRunner(initialBlocks = []) {
     const progress = useProgress()
 
     const blocks = ref(initialBlocks) // the session plan
-    const isActive = ref(false)       // is a session currently running?
+    const isActive = ref(false)       // is a session in progress (running or paused)?
+    const isPaused = ref(false)       // paused: countdown and metronome stopped, place kept
     const currentIndex = ref(0)       // which block we're on
     const secondsLeft = ref(0)        // countdown within the current block
+    const elapsedSeconds = ref(0)     // active (unpaused) time this session
 
     let countdownId = null
     let log = null                    // handle for the session being logged
@@ -35,11 +37,12 @@ export function useSessionRunner(initialBlocks = []) {
         if (!metronome.isRunning.value) metronome.start()
     }
 
-    // Called once per second while a session runs.
+    // Called once per second while a session runs (never while paused).
     function tick() {
         // Count this second towards lifetime hours, the streak, and challenges
         // (but not the Metronome tab's own session timer).
         progress.tick(1, { session: false })
+        elapsedSeconds.value += 1
         secondsLeft.value -= 1
         if (secondsLeft.value <= 0) advance()
     }
@@ -54,6 +57,8 @@ export function useSessionRunner(initialBlocks = []) {
     function start() {
         if (isActive.value || blocks.value.length === 0) return
         isActive.value = true
+        isPaused.value = false
+        elapsedSeconds.value = 0
         progress.startSession()
         const bpms = blocks.value.map((b) => b.bpm)
         log = beginSession('runner', {
@@ -62,6 +67,25 @@ export function useSessionRunner(initialBlocks = []) {
             bpmHigh: Math.max(...bpms),
         })
         beginBlock(0)
+        countdownId = setInterval(tick, 1000)
+    }
+
+    // Take a break: freeze the countdown and the metronome, keep the current block.
+    function pause() {
+        if (!isActive.value || isPaused.value) return
+        // Set the flag BEFORE stopping the engine, so the watcher below knows this stop
+        // is a pause and not the Metronome tab taking over.
+        isPaused.value = true
+        if (countdownId) { clearInterval(countdownId); countdownId = null }
+        metronome.stop()
+        log?.pause()
+    }
+
+    function resume() {
+        if (!isActive.value || !isPaused.value) return
+        isPaused.value = false
+        log?.resume()
+        metronome.start()
         countdownId = setInterval(tick, 1000)
     }
 
@@ -79,6 +103,7 @@ export function useSessionRunner(initialBlocks = []) {
     // `@click="stop"` passes the click event as the first argument.
     function stop() {
         isActive.value = false
+        isPaused.value = false
         if (countdownId) { clearInterval(countdownId); countdownId = null }
         metronome.stop()
         closeLog(false)
@@ -93,21 +118,23 @@ export function useSessionRunner(initialBlocks = []) {
         stop()
     }
 
+    // Skipping is disabled while paused: moving to a new block restarts the metronome.
     function skip() {
-        if (isActive.value) advance()
+        if (isActive.value && !isPaused.value) advance()
     }
 
     // Starting the Metronome tab stops this engine (one engine at a time); end the
-    // session too, so it doesn't keep counting practice time in silence.
+    // session too, so it doesn't keep counting practice time in silence. A pause also
+    // stops the engine, but keeps the session.
     watch(metronome.isRunning, (running) => {
-        if (!running && isActive.value) stop()
+        if (!running && isActive.value && !isPaused.value) stop()
     })
 
     onScopeDispose(stop) // clean up if the component unmounts mid-session
 
     return {
-        blocks, isActive, currentIndex, secondsLeft, currentBlock,
+        blocks, isActive, isPaused, currentIndex, secondsLeft, elapsedSeconds, currentBlock,
         bpm: metronome.bpm, // exposed for display
-        start, stop, skip,
+        start, stop, skip, pause, resume,
     }
 }
