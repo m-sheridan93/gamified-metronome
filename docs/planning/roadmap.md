@@ -95,7 +95,7 @@ Android, no new language.
   CocoaPods), running in the iPhone simulator with saved data surviving a relaunch.
   `npm run ios` builds, syncs, and opens it in Xcode.
 - **Run on the author's iPhone**: free Apple ID, steps in `mobile.md`.
-- **Mobile polish**: status-bar colour, bottom tab bar on phones, iOS audio session
+- **Mobile polish**: (status-bar colour and bottom tab bar done) iOS audio session
   (play with the silent switch on and mix with other apps), keep-awake, native storage
   adapter, and a human-designed app icon. Details in `mobile.md`.
 - **Android**: not started (Android Studio, then `cap add android`).

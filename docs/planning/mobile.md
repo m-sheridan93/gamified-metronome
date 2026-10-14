@@ -78,8 +78,12 @@ This is a one-time hump (provisioning, signing, first submission), not ongoing w
 - Capacitor 8 with an Xcode project in `ios/` (Swift Package Manager, no CocoaPods).
 - App ID `com.michaelsheridan.gamifiedmetronome` and name "Gamified Metronome", both
   placeholders until the app is named (the ID only becomes permanent on App Store release).
-- `ios.contentInset: "always"` in `capacitor.config.json`, so content stays inside the safe
-  area (clear of the status bar, Dynamic Island, and home indicator).
+- Safe areas: the page draws edge to edge (`viewport-fit=cover` in `index.html`) and the
+  app bar, content, bottom tab bar, and full-screen dialogs are padded by the device's
+  insets (`env(safe-area-inset-*)` in `App.vue`). The app bar's blue extends behind the
+  status bar. (`ios.contentInset` was tried first but left fixed bottom bars under the
+  home indicator.)
+- Phones get a bottom tab bar (icon + label); larger screens keep the top tabs.
 - Verified in the iPhone 16 simulator (iOS 18.5): the app runs, onboarding and the main
   tabs render, and saved data survives a force-quit and relaunch.
 
@@ -107,10 +111,8 @@ your iPhone and press Run.
 
 ### Mobile polish (not done yet)
 
-- **Status bar area**: the band above the blue app bar is white; extend the app bar colour
-  behind the status bar (`viewport-fit=cover` plus safe-area padding).
-- **Navigation**: four tabs don't fit across a phone ("Challenges" is cut off). A bottom
-  tab bar is the usual iOS pattern.
+- ~~Status bar area~~ Done: the app bar's blue extends behind the status bar.
+- ~~Navigation~~ Done: bottom tab bar on phones.
 - **Audio session**: by default, web audio on iOS goes silent with the ring/silent switch
   and stops music playing in other apps. A metronome should probably keep playing with the
   switch on, and mix with music from another app so you can play along (`AVAudioSession`
