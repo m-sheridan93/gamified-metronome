@@ -70,10 +70,11 @@ Cheap now, prevents a rewrite later. The point is backend-*ready*, not a backend
 - **Explicit domain entities with stable IDs + timestamps**: `Profile`, `Project`,
   `Session`, `Preset`, `Challenge`, `Badge`. Give each a `uuid` and `updatedAt` so they
   can sync/merge later.
-- **A repository/storage layer** the domain talks through (extend today's `storage.js`
-  into per-entity repos). Keep call sites async-friendly so `localStorage` can be swapped
-  for a REST/Supabase backend without touching features.
-- **A "current profile" concept** now, even single-user, so accounts slot in cleanly.
+- ~~A repository/storage layer~~ Partly done: storage goes through a swappable async
+  adapter and loads before the app mounts, so it's ready for native storage on mobile.
+  Per-entity repositories are deferred until backend sync, since the single save blob
+  maps onto tables at sync time (see `accounts-and-security.md`).
+- ~~A "current profile" concept~~ Done: the on-device profile from onboarding.
 - ~~Pick a target backend direction~~ Decided: Supabase (Postgres + auth). See
   `accounts-and-security.md`.
 - **Keep state serialisable and sync-shaped** (no functions in stored state, deterministic

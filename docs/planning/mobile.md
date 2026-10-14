@@ -45,8 +45,13 @@ This is a one-time hump (provisioning, signing, first submission), not ongoing w
 
 ## What changes in the app
 
-- **Storage**: swap `localStorage` for `@capacitor/preferences` behind the existing
-  storage layer (the `storage.js` abstraction already isolates this).
+- **Storage**: ready. `storage.js` reads and writes through an async adapter, and
+  progress loads before the app mounts. On native, call `setStorageAdapter(...)` at
+  startup with a native adapter. Pick the store with data size in mind:
+  `@capacitor/preferences` is meant for small key-value settings, but the save blob grows
+  with every logged session, so a JSON file via `@capacitor/filesystem` (or SQLite later)
+  is likely the better fit. On first native launch, copy any existing WebView
+  `localStorage` data into the native store (one-time migration).
 - **Lifecycle**: `@capacitor/app` for pause/resume (useful for session timing and any
   future idle logic).
 - **Metronome audio**: decide **keep-screen-awake vs true background audio**: a

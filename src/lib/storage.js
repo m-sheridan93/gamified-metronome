@@ -3,12 +3,37 @@
  *
  * Everything durable lives in one versioned JSON blob under a single key, so the
  * schema can evolve with a `version` bump rather than a scatter of string keys.
- * Backed by localStorage today; the read/write surface is small enough to swap for
- * @capacitor/preferences later without touching feature code.
+ *
+ * Reads and writes go through a storage adapter with an async interface, so the
+ * browser's localStorage can be swapped for native storage on iOS/Android (where
+ * WebView localStorage can be cleared by the OS) without touching feature code.
  */
 
 const STORAGE_KEY = 'gm-progress'
 const SCHEMA_VERSION = 1
+
+/**
+ * A storage adapter is any async string key-value store:
+ *   { get(key) => Promise<string|null>, set(key, value) => Promise, remove(key) => Promise }
+ */
+export const localStorageAdapter = {
+  async get(key) {
+    return localStorage.getItem(key)
+  },
+  async set(key, value) {
+    localStorage.setItem(key, value)
+  },
+  async remove(key) {
+    localStorage.removeItem(key)
+  },
+}
+
+let adapter = localStorageAdapter
+
+/** Swap the storage backend, e.g. for a native adapter in the mobile app. Call before loading. */
+export function setStorageAdapter(next) {
+  adapter = next
+}
 
 /** A fresh, empty progress blob. */
 export function defaults() {
@@ -38,31 +63,41 @@ export function defaults() {
 }
 
 /** Load progress, merging over defaults and migrating legacy keys on first run. */
-export function loadState() {
+export async function loadState() {
+  let raw = null
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    raw = await adapter.get(STORAGE_KEY)
     if (raw) {
       return migrate({ ...defaults(), ...JSON.parse(raw) })
     }
-    const legacy = loadLegacy()
+    const legacy = await loadLegacy()
     if (legacy) {
-      saveState(legacy)
+      await saveState(legacy)
       return legacy
     }
   } catch (e) {
-    // Corrupt/unavailable storage: fall back to a clean slate rather than crash.
+    // Corrupt/unavailable storage: fall back to a clean slate rather than crash. Keep
+    // a copy of any unreadable data first, so the next save can't destroy it.
     console.warn('Failed to load progress, starting fresh:', e)
+    if (raw) {
+      await adapter.set(`${STORAGE_KEY}-unreadable-${Date.now()}`, raw).catch(() => {})
+    }
   }
   return defaults()
 }
 
+// Writes run one after another, in call order, so a slow native write can never land
+// after (and overwrite) a newer one.
+let writeQueue = Promise.resolve()
+
 /** Persist the full progress blob. Swallows quota/availability errors. */
 export function saveState(state) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-  } catch (e) {
-    console.warn('Failed to save progress:', e)
-  }
+  // Snapshot now, so later changes to `state` don't alter what this write stores.
+  const json = JSON.stringify(state)
+  writeQueue = writeQueue
+    .then(() => adapter.set(STORAGE_KEY, json))
+    .catch((e) => console.warn('Failed to save progress:', e))
+  return writeQueue
 }
 
 /** Forward-migrate an older blob to the current schema. No-op for v1. */
@@ -71,11 +106,11 @@ function migrate(state) {
   return state
 }
 
-/** One-time import from the pre-v1 loose localStorage keys. */
-function loadLegacy() {
-  const total = localStorage.getItem('metronome-total-points')
-  const lastPractice = localStorage.getItem('metronome-last-practice')
-  const streak = localStorage.getItem('metronome-practice-streak')
+/** One-time import from the pre-v1 loose keys. */
+async function loadLegacy() {
+  const total = await adapter.get('metronome-total-points')
+  const lastPractice = await adapter.get('metronome-last-practice')
+  const streak = await adapter.get('metronome-practice-streak')
   if (total == null && lastPractice == null && streak == null) return null
 
   const points = parseInt(total || '0', 10) || 0

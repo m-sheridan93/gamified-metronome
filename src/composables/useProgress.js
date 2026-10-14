@@ -1,5 +1,5 @@
 import { reactive, computed } from 'vue'
-import { loadState, saveState, todayISO, daysBetween, startOfWeekISO } from '../lib/storage'
+import { defaults, loadState, saveState, todayISO, daysBetween, startOfWeekISO } from '../lib/storage'
 import { formatClock } from '../lib/format'
 
 /**
@@ -13,19 +13,45 @@ import { formatClock } from '../lib/format'
 
 const POINTS_THRESHOLD_SECONDS = 60 // practice time earned per point (tune here)
 
-// Shared so sibling composables (e.g. useStudio) read/write the same save blob.
-export const state = reactive(loadState())
+// Shared so sibling composables (e.g. usePresets) read/write the same save blob.
+// Starts as defaults; initProgress() fills it from storage before the app mounts.
+export const state = reactive(defaults())
+
+// Saving is blocked until the stored data has loaded, so an early write can never
+// overwrite real progress with empty defaults.
+let loaded = false
+
+/** Load saved progress into `state`. Await this before mounting the app. */
+export async function initProgress() {
+  Object.assign(state, await loadState())
+  loaded = true
+
+  // Write a pending save straight away when the page is hidden or closed: on mobile
+  // the OS may kill a backgrounded app before the debounce timer fires.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushPending()
+  })
+  window.addEventListener('pagehide', flushPending)
+}
+
+// Only writes if a debounced save is waiting. Saving unconditionally on close would
+// write the in-memory copy back over storage the user just cleared (e.g. clearing
+// site data with the app open).
+function flushPending() {
+  if (saveTimer) persistNow()
+}
 
 // Debounced persistence: practice time ticks ~10x/sec, so avoid hammering storage.
 let saveTimer = null
 function persistSoon() {
-  if (saveTimer) return
+  if (!loaded || saveTimer) return
   saveTimer = setTimeout(() => {
     saveTimer = null
     saveState(state)
   }, 1000)
 }
 export function persistNow() {
+  if (!loaded) return
   if (saveTimer) {
     clearTimeout(saveTimer)
     saveTimer = null

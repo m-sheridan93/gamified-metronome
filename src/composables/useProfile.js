@@ -91,5 +91,11 @@ export function useProfile() {
     persistNow()
   }
 
-  return { profile, needsOnboarding, currentAnswers, saveProfile, skipOnboarding }
+  /** Forget the profile so first-run onboarding starts again. */
+  function resetProfile() {
+    state.profile = null
+    persistNow()
+  }
+
+  return { profile, needsOnboarding, currentAnswers, saveProfile, skipOnboarding, resetProfile }
 }

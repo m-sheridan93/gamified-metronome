@@ -71,9 +71,10 @@
       </v-card-text>
 
       <v-card-actions>
-        <v-btn v-if="step === 0" variant="text" @click="skipOrCancel">
-          {{ editing ? 'Cancel' : 'Skip for now' }}
-        </v-btn>
+        <template v-if="step === 0">
+          <v-btn variant="text" @click="skipOrCancel">{{ editing ? 'Cancel' : 'Skip for now' }}</v-btn>
+          <v-btn v-if="editing" variant="text" @click="restartSetup">Start setup again</v-btn>
+        </template>
         <v-btn v-else variant="text" @click="step--">Back</v-btn>
         <v-spacer/>
         <v-btn v-if="step < STEP_COUNT - 1" color="primary" variant="flat" @click="step++">Next</v-btn>
@@ -96,7 +97,7 @@ const props = defineProps({modelValue: Boolean})
 const emit = defineEmits(['update:modelValue'])
 
 const {smAndDown} = useDisplay()
-const {profile, currentAnswers, saveProfile, skipOnboarding} = useProfile()
+const {profile, currentAnswers, saveProfile, skipOnboarding, resetProfile} = useProfile()
 
 const STEP_COUNT = 4
 const step = ref(0)
@@ -118,6 +119,13 @@ watch(() => props.modelValue, (open) => {
 
 function close() {
   emit('update:modelValue', false)
+}
+
+// Forget the saved answers and go through first-run setup again.
+function restartSetup() {
+  resetProfile()
+  answers.value = currentAnswers()
+  step.value = 0
 }
 
 function skipOrCancel() {
