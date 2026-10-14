@@ -1,8 +1,5 @@
 {
   "appId": "com.michaelsheridan.gamifiedmetronome",
   "appName": "Gamified Metronome",
-  "webDir": "dist",
-  "ios": {
-    "contentInset": "always"
-  }
+  "webDir": "dist"
 }
