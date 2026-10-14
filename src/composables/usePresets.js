@@ -17,6 +17,8 @@ export function cleanBlocks(rows) {
     bpm: Number(r.bpm),
     minutes: Number(r.minutes),
     label: r.label || '',
+    // Blocks sized to a song keep its length, so "Play X of N" survives saving.
+    ...(r.songSeconds ? { songSeconds: Number(r.songSeconds) } : {}),
   }))
 }
 
