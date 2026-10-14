@@ -88,13 +88,17 @@ Cheap now, prevents a rewrite later. The point is backend-*ready*, not a backend
 
 ## Mobile delivery: iOS + Android (see `mobile.md`)
 
-The app must ship on both stores. Approach: **Capacitor**, which wraps the existing Vue app:
-one codebase → web + iOS + Android. For a web dev this needs no new language; the real
-cost is native toolchains (Xcode, Android Studio) and store accounts (Apple $99/yr,
-Google $25 once). **Sequencing:** not yet. Do it after the *Next* block, when there's
-enough app to be worth installing; Android first (cheaper/faster), iOS after. Optional
-early step: stand up the Capacitor shell just for on-device testing while building. Full
-plan, prerequisites, and what-changes in `mobile.md`.
+Approach: **Capacitor**, which wraps the existing Vue app: one codebase → web + iOS +
+Android, no new language.
+
+- ~~iOS shell~~ Done: Capacitor 8 with an Xcode project (Swift Package Manager, no
+  CocoaPods), running in the iPhone simulator with saved data surviving a relaunch.
+  `npm run ios` builds, syncs, and opens it in Xcode.
+- **Run on the author's iPhone**: free Apple ID, steps in `mobile.md`.
+- **Mobile polish**: (status-bar colour and bottom tab bar done) iOS audio session
+  (play with the silent switch on and mix with other apps), keep-awake, native storage
+  adapter, and a human-designed app icon. Details in `mobile.md`.
+- **Android**: not started (Android Studio, then `cap add android`).
 
 ## Investigations (research before planning)
 
