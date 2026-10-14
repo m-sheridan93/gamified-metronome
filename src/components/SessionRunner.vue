@@ -10,6 +10,9 @@
           </div>
           <div class="text-h6">{{ currentBlock?.label }}</div>
           <div class="text-h2 my-2">{{ bpm }} <span class="text-h6">bpm</span></div>
+          <div v-if="playInfo" class="text-subtitle-1 mb-1">
+            Play {{ playInfo.current }} of {{ playInfo.total }}
+          </div>
           <div class="text-h4 mb-3" :class="{'text-disabled': isPaused}">{{ formattedTime }}</div>
           <v-progress-linear :model-value="blockProgress" color="primary" height="8" rounded class="mb-4"/>
         </div>
@@ -61,15 +64,23 @@
           note to yourself - e.g. "Slow", "+20", "chorus".
         </div>
 
-        <!-- Auto-build from a goal tempo -->
-        <div class="d-flex align-center mb-3" style="gap: 8px;">
+        <!-- Auto-build from a goal tempo; optionally in whole plays of a song -->
+        <div class="d-flex align-center flex-wrap" style="gap: 8px;">
           <v-text-field v-model.number="goalBpm" label="Goal BPM" type="number" :min="MIN_BPM" :max="MAX_BPM"
-                        density="compact" hide-details style="max-width: 120px;"/>
+                        density="compact" hide-details style="max-width: 110px;"/>
           <v-text-field v-model.number="goalMinutes" label="Minutes" type="number" min="1"
+                        density="compact" hide-details style="max-width: 100px;"/>
+          <v-text-field v-model.number="goalSteps" label="Steps" placeholder="auto" type="number" min="1"
+                        density="compact" hide-details style="max-width: 90px;"/>
+          <v-text-field v-model="songText" label="Song (m:ss)" placeholder="optional"
+                        :error="!!songText && !songSeconds"
                         density="compact" hide-details style="max-width: 120px;"/>
           <v-btn variant="tonal" size="small" :disabled="!goalBpm || !goalMinutes" @click="autoBuild">
             <v-icon start>mdi-auto-fix</v-icon> Generate
           </v-btn>
+        </div>
+        <div class="text-caption text-medium-emphasis mt-1 mb-3" style="min-height: 1.25em;">
+          {{ rampNote }}
         </div>
         <v-divider class="mb-4"/>
 
@@ -151,7 +162,8 @@ import {useSessionRunner} from '../composables/useSessionRunner'
 import {usePresets, sameBlocks, suggestName, DEFAULT_SELECTION} from '../composables/usePresets'
 import {MIN_BPM, MAX_BPM} from '../composables/useMetronome'
 import {MIN_LOGGED_SECONDS} from '../composables/useSessionLog'
-import {formatClock} from '../lib/format'
+import {formatClock, formatDuration, plural} from '../lib/format'
+import {generateRamp, parseSongLength} from '../lib/ramp'
 
 const {
   presets, savePreset, deletePreset, markUsed, getPreset, nameExists,
@@ -192,6 +204,7 @@ function loadPreset(id) {
   selectedPresetId.value = target
   rows.value = copyBlocks(blocksFor(target))
   rememberSelection(target)
+  rampNote.value = ''
 }
 
 // Save dialog. Prefills the loaded preset's name, or a name built from the plan.
@@ -221,9 +234,13 @@ function confirmDelete() {
   loadPreset(DEFAULT_SELECTION)
 }
 
-// Goal-based auto-builder inputs.
+// Goal-based auto-builder inputs. Steps and song length are optional.
 const goalBpm = ref(null)
 const goalMinutes = ref(10)
+const goalSteps = ref(null)
+const songText = ref('')
+const songSeconds = computed(() => parseSongLength(songText.value))
+const rampNote = ref('') // e.g. "4 steps × 2 plays (6m each) = 24m, you asked for 20m"
 
 const {
   blocks, isActive, isPaused, currentIndex, secondsLeft, elapsedSeconds, currentBlock, bpm,
@@ -238,29 +255,23 @@ function removeRow(i) {
   rows.value.splice(i, 1)
 }
 
-// Build a ramp of 1-minute blocks from an auto-picked start tempo up to the goal.
-function generateRamp(goal, totalMinutes) {
-  const g = Math.round(Number(goal))
-  const mins = Math.max(1, Math.round(Number(totalMinutes)))
-  // Ease in from ~60% of the goal, with a floor, and never above the goal.
-  const start = Math.min(g, Math.max(40, Math.round(g * 0.6)))
-  if (mins === 1) return [{bpm: g, minutes: 1, label: 'Goal'}]
-
-  const span = g - start
-  const out = []
-  for (let i = 0; i < mins; i++) {
-    const t = i / (mins - 1)             // 0 → 1 across the blocks
-    out.push({
-      bpm: Math.round(start + span * t), // linear ramp
-      minutes: 1,
-      label: i === mins - 1 ? 'Goal' : '',
-    })
-  }
-  return out
-}
-
 function autoBuild() {
-  rows.value = generateRamp(goalBpm.value, goalMinutes.value)
+  const steps = Math.round(Number(goalSteps.value)) || null
+  const song = songSeconds.value
+  const {rows: built, totalSeconds, plays} = generateRamp(goalBpm.value, goalMinutes.value, {
+    steps,
+    songSeconds: song,
+  })
+  rows.value = built
+
+  // With a song, explain the rounding to whole plays (the total can differ from the ask).
+  rampNote.value = ''
+  if (plays) {
+    const asked = Number(goalMinutes.value) * 60
+    rampNote.value = `${plural(built.length, 'step')} × ${plural(plays, 'play')} `
+        + `(${formatDuration(plays * song)} each) = ${formatDuration(totalSeconds)}`
+        + (Math.round(totalSeconds) !== Math.round(asked) ? `, you asked for ${formatDuration(asked)}` : '')
+  }
 }
 
 function startSession() {
@@ -271,6 +282,7 @@ function startSession() {
     bpm: Number(r.bpm),
     seconds: Math.round(Number(r.minutes) * 60),
     label: r.label || `${r.bpm} bpm`,
+    ...(r.songSeconds ? {songSeconds: r.songSeconds} : {}),
   }))
   start()
 }
@@ -291,6 +303,15 @@ const promptText = computed(() => (isEdited.value
     : 'Good session. Save it as a preset for next time?'))
 
 const formattedTime = computed(() => formatClock(secondsLeft.value))
+
+// For blocks sized to a song: which play of the song you're on, e.g. "Play 2 of 2".
+const playInfo = computed(() => {
+  const block = currentBlock.value
+  if (!block?.songSeconds) return null
+  const total = Math.max(1, Math.round(block.seconds / block.songSeconds))
+  const elapsed = block.seconds - secondsLeft.value
+  return {current: Math.min(total, Math.floor(elapsed / block.songSeconds) + 1), total}
+})
 
 const blockProgress = computed(() => {
   if (!currentBlock.value) return 0
