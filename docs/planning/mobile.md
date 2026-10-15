@@ -98,6 +98,29 @@ npm run ios
 That runs `vite build && cap sync ios && cap open ios`. From Xcode, pick a simulator or
 your iPhone and press Run.
 
+Write code in your editor and use Xcode only to run the app and change native settings.
+Don't edit `App/App/public` in Xcode: it's a generated copy of the build and is
+overwritten on every sync.
+
+### Live reload on the phone
+
+```bash
+npm run ios:live
+```
+
+This builds and syncs, then starts the dev server on your local network and points the
+iOS app at it. Press Run in Xcode once; after that, saving a file updates the phone in a
+second or two.
+
+- The phone must be on the same Wi-Fi as the Mac. The first time, iOS asks to allow
+  access to devices on your local network: allow it.
+- Ctrl+C stops the server and points the app back at the built files. Press Run again
+  afterwards, or the app on the phone keeps looking for the dev server and shows a blank
+  screen.
+- The phone loads the app over plain `http`, not as a bundled app, so a few browser
+  features may behave differently. Test audio behaviour (e.g. the silent switch) with a
+  normal Run.
+
 ### Running on your own iPhone (free Apple ID)
 
 1. Plug the iPhone into the Mac, unlock it, and tap **Trust This Computer**.
