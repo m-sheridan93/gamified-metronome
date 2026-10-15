@@ -113,11 +113,12 @@ your iPhone and press Run.
 
 - ~~Status bar area~~ Done: the app bar's blue extends behind the status bar.
 - ~~Navigation~~ Done: bottom tab bar on phones.
-- **Audio session**: by default, web audio on iOS goes silent with the ring/silent switch
-  and stops music playing in other apps. A metronome should probably keep playing with the
-  switch on, and mix with music from another app so you can play along (`AVAudioSession`
-  `.playback` with `.mixWithOthers`, a few lines in `AppDelegate.swift`). Test on a device.
-- **Keep the screen awake** while practising (keep-awake plugin).
+- ~~Silent switch~~ Done: the web audio session is set to `playback`
+  (`navigator.audioSession`), so the metronome plays with the ring/silent switch on.
+- **Mix with other apps**: `playback` may still pause music from another app. To play
+  along to it, set `AVAudioSession` `.playback` with `.mixWithOthers` natively (a few
+  lines in `AppDelegate.swift`). Test on a device.
+- **Keep the screen awake** during practice (keep-awake plugin).
 - **Native storage adapter** (see "What changes in the app" above), plus a one-time
   migration from WebView `localStorage`.
 - **App icon and launch screen**: currently Capacitor's placeholders; they need
