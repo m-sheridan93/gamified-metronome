@@ -14,7 +14,7 @@
             Play {{ playInfo.current }} of {{ playInfo.total }}
           </div>
           <div class="text-h4 mb-3" :class="{'text-disabled': isPaused}">{{ formattedTime }}</div>
-          <v-progress-linear :model-value="blockProgress" color="primary" height="8" rounded class="mb-4"/>
+          <v-progress-linear :model-value="blockProgress" color="secondary" height="8" rounded class="mb-4"/>
         </div>
         <div class="text-center">
           <v-btn color="error" variant="outlined" class="mr-2" @click="stop">Stop</v-btn>
@@ -79,7 +79,7 @@
                       density="compact" persistent-hint class="mb-4"
                       :error-messages="songText && !songSeconds ? 'Use m:ss, e.g. 3:12' : []"
                       hint="Each step becomes whole plays of the song, so it never stops mid-song."/>
-        <v-btn block variant="tonal" :disabled="!goalBpm || !goalMinutes" @click="autoBuild">
+        <v-btn block color="secondary" :disabled="!goalBpm || !goalMinutes" @click="autoBuild">
           <v-icon start>mdi-auto-fix</v-icon> Generate
         </v-btn>
         <div class="text-caption text-medium-emphasis mt-2 mb-3" style="min-height: 1.25em;">

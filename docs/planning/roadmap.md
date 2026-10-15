@@ -99,10 +99,10 @@ Android, no new language.
 - ~~iOS shell~~ Done: Capacitor 8 with an Xcode project (Swift Package Manager, no
   CocoaPods), running in the iPhone simulator with saved data surviving a relaunch.
   `npm run ios` builds, syncs, and opens it in Xcode.
-- **Run on the author's iPhone**: free Apple ID, steps in `mobile.md`.
-- **Mobile polish**: (status-bar colour, bottom tab bar, and playing with the silent
-  switch on done) mixing with other apps' audio, keep-awake, native storage
-  adapter, and a human-designed app icon. Details in `mobile.md`.
+- ~~Run on the author's iPhone~~ Done: free Apple ID, steps in `mobile.md`.
+- **Mobile polish**: (status-bar colour, bottom tab bar, playing with the silent switch
+  on, and the app icon done) mixing with other apps' audio, keep-awake, native storage
+  adapter, and a launch screen. Details in `mobile.md`.
 - **Android**: not started (Android Studio, then `cap add android`).
 
 ## Investigations (research before planning)
