@@ -8,9 +8,10 @@ import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css' // icon font for Vuetify's mdi-* icons
 import { initProgress } from './composables/useProgress'
 
-// Palette (see docs/planning/design-assets.md): Forest Green #062425, Teal Green #2e765e,
-// Spearmint #88cdb2, Blue Grotto #077ab2. `brand` is the top bar, matching the app icon.
-// Error and warning keep Vuetify's red and orange so they still read as warnings.
+// Palette (see docs/planning/design-assets.md). Backgrounds stay Vuetify's neutral white
+// and dark grey; the palette is for accents. Dark mode uses Spearmint, Teal Green's lighter
+// shade, because Teal is too dim on dark grey for text. Error and warning keep Vuetify's
+// red and orange so they still read as warnings.
 const vuetify = createVuetify({
     components,
     directives,
@@ -22,20 +23,15 @@ const vuetify = createVuetify({
         themes: {
             light: {
                 colors: {
-                    brand: '#062425',
-                    background: '#f4f8f6',
-                    primary: '#2e765e',
-                    secondary: '#077ab2',
+                    primary: '#2e765e', // Teal Green
+                    secondary: '#077ab2', // Blue Grotto
                     info: '#077ab2',
                     success: '#2e765e',
                 },
             },
             dark: {
                 colors: {
-                    brand: '#0e2f30',
-                    background: '#062425',
-                    surface: '#0e2f30',
-                    primary: '#88cdb2',
+                    primary: '#88cdb2', // Spearmint
                     secondary: '#077ab2',
                     info: '#077ab2',
                     success: '#88cdb2',

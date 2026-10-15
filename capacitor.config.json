@@ -1,6 +1,5 @@
 {
   "appId": "com.michaelsheridan.gamifiedmetronome",
   "appName": "Gamified Metronome",
-  "webDir": "dist",
-  "backgroundColor": "#062425"
+  "webDir": "dist"
 }

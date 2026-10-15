@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar color="brand">
+    <v-app-bar color="surface">
       <v-toolbar-title>Gamified Metronome</v-toolbar-title>
       <v-btn icon="mdi-account-circle" aria-label="Profile" title="Profile" @click="profileOpen = true"/>
     </v-app-bar>

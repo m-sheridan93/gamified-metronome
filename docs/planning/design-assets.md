@@ -9,14 +9,16 @@ the look matters.
 
 | Name | Hex | Used for |
 |---|---|---|
-| Forest Green | `#062425` | Icon background; app top bar; dark-mode background |
-| Teal Green | `#2e765e` | Icon frame; buttons and accents in light mode |
-| Spearmint | `#88cdb2` | The P; buttons and accents in dark mode |
-| Blue Grotto | `#077ab2` | Secondary / info accent |
+| Forest Green | `#062425` | Icon background (the app itself stays neutral) |
+| Teal Green | `#2e765e` | Icon frame; main accent in light mode |
+| Spearmint | `#88cdb2` | The P; main accent in dark mode |
+| Blue Grotto | `#077ab2` | Second accent (Generate button, session progress) |
 
 Spearmint on Forest Green has the strongest contrast (8.9:1). Never put Blue Grotto and
 Teal Green on top of each other (1.1:1, they blur together). The app theme is defined in
-`src/main.js` and follows the phone's light / dark setting.
+`src/main.js` and follows the phone's light / dark setting, with neutral white and dark
+grey backgrounds. Use Blue Grotto for solid shapes and buttons with white text, not as
+text on dark grey (3.4:1, too faint).
 
 ## Shared rules for icons
 
