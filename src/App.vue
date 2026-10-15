@@ -2,6 +2,15 @@
   <v-app>
     <v-app-bar color="surface">
       <v-toolbar-title>Gamified Metronome</v-toolbar-title>
+      <v-menu>
+        <template #activator="{props}">
+          <v-btn v-bind="props" :icon="current.icon" aria-label="Appearance" title="Appearance"/>
+        </template>
+        <v-list density="compact" :selected="[appearance]" color="primary">
+          <v-list-item v-for="a in APPEARANCES" :key="a.value" :value="a.value"
+                       :prepend-icon="a.icon" :title="a.title" @click="setAppearance(a.value)"/>
+        </v-list>
+      </v-menu>
       <v-btn icon="mdi-account-circle" aria-label="Profile" title="Profile" @click="profileOpen = true"/>
     </v-app-bar>
     <Onboarding v-model="profileOpen"/>
@@ -42,6 +51,7 @@ import Challenges from './components/Challenges.vue'
 import History from './components/History.vue'
 import Onboarding from './components/Onboarding.vue'
 import {useProfile} from './composables/useProfile'
+import {useAppearance, APPEARANCES} from './composables/useAppearance'
 // Shop.vue / Studio.vue are kept in the repo but hidden from the UI for now.
 
 // One list drives both the top tabs and the bottom bar, and the content panels.
@@ -60,6 +70,9 @@ const tab = ref('metronome')
 // First launch opens onboarding; afterwards the profile button reopens it.
 const {needsOnboarding} = useProfile()
 const profileOpen = ref(needsOnboarding.value)
+
+// Light / dark switch in the top bar: match phone, light, or dark.
+const {appearance, current, setAppearance} = useAppearance()
 </script>
 
 <style>

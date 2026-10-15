@@ -141,6 +141,9 @@ second or two.
 - **Mix with other apps**: `playback` may still pause music from another app. To play
   along to it, set `AVAudioSession` `.playback` with `.mixWithOthers` natively (a few
   lines in `AppDelegate.swift`). Test on a device.
+- **Status bar follows the app's light / dark choice**: the time and battery text follows
+  the phone's mode, so with the in-app switch set opposite to the phone it can be hard to
+  read. Fix with the official `@capacitor/status-bar` plugin (`setStyle` on each change).
 - **Keep the screen awake** during practice (keep-awake plugin).
 - **Native storage adapter** (see "What changes in the app" above), plus a one-time
   migration from WebView `localStorage`.
