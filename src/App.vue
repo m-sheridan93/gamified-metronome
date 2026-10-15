@@ -83,4 +83,10 @@ const profileOpen = ref(needsOnboarding.value)
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
 }
+
+/* Vuetify hyphenates field hints (e.g. "fin-ishes"); wrap whole words instead. The
+   extra class outranks Vuetify's own rule, which loads after this stylesheet. */
+.v-messages .v-messages__message {
+  hyphens: manual;
+}
 </style>
