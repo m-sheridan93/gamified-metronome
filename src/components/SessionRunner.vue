@@ -65,21 +65,24 @@
         </div>
 
         <!-- Auto-build from a goal tempo; optionally in whole plays of a song -->
-        <div class="d-flex align-center flex-wrap" style="gap: 8px;">
-          <v-text-field v-model.number="goalBpm" label="Goal BPM" type="number" :min="MIN_BPM" :max="MAX_BPM"
-                        density="compact" hide-details style="max-width: 110px;"/>
-          <v-text-field v-model.number="goalMinutes" label="Minutes" type="number" min="1"
-                        density="compact" hide-details style="max-width: 100px;"/>
-          <v-text-field v-model.number="goalSteps" label="Steps" placeholder="auto" type="number" min="1"
-                        density="compact" hide-details style="max-width: 90px;"/>
-          <v-text-field v-model="songText" label="Song (m:ss)" placeholder="optional"
-                        :error="!!songText && !songSeconds"
-                        density="compact" hide-details style="max-width: 120px;"/>
-          <v-btn variant="tonal" size="small" :disabled="!goalBpm || !goalMinutes" @click="autoBuild">
-            <v-icon start>mdi-auto-fix</v-icon> Generate
-          </v-btn>
-        </div>
-        <div class="text-caption text-medium-emphasis mt-1 mb-3" style="min-height: 1.25em;">
+        <div class="text-subtitle-2 mb-3">Generate a plan</div>
+        <v-text-field v-model.number="goalBpm" label="Goal BPM" type="number" :min="MIN_BPM" :max="MAX_BPM"
+                      density="compact" persistent-hint class="mb-3"
+                      hint="The tempo you're working towards. The plan finishes here."/>
+        <v-text-field v-model.number="goalMinutes" label="Minutes" type="number" min="1"
+                      density="compact" persistent-hint class="mb-3"
+                      hint="Roughly how long the session should last."/>
+        <v-text-field v-model.number="goalSteps" label="Steps (optional)" type="number" min="1"
+                      density="compact" persistent-hint class="mb-3"
+                      hint="How many tempo changes. Leave blank for one per minute."/>
+        <v-text-field v-model="songText" label="Song length (optional)" placeholder="m:ss, e.g. 3:12"
+                      density="compact" persistent-hint class="mb-4"
+                      :error-messages="songText && !songSeconds ? 'Use m:ss, e.g. 3:12' : []"
+                      hint="Each step becomes whole plays of the song, so it never stops mid-song."/>
+        <v-btn block variant="tonal" :disabled="!goalBpm || !goalMinutes" @click="autoBuild">
+          <v-icon start>mdi-auto-fix</v-icon> Generate
+        </v-btn>
+        <div class="text-caption text-medium-emphasis mt-2 mb-3" style="min-height: 1.25em;">
           {{ rampNote }}
         </div>
         <v-divider class="mb-4"/>
@@ -94,7 +97,7 @@
                         density="compact" hide-details style="max-width: 90px;"/>
           <v-text-field v-model.number="row.minutes" label="Min" type="number" min="0" step="0.5"
                         density="compact" hide-details style="max-width: 90px;"/>
-          <v-text-field v-model="row.label" label="Label (optional)" placeholder="e.g. Slow"
+          <v-text-field v-model="row.label" label="Label" placeholder="e.g. Slow"
                         density="compact" hide-details/>
           <v-btn icon="mdi-delete" variant="text" size="small" color="error"
                  @click="removeRow(i)"/>

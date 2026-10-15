@@ -50,6 +50,16 @@ export function useMetronome() {
   }
 
   function ensureContext() {
+    // iOS treats web audio as ambient sound by default, so the ring/silent switch mutes
+    // it. 'playback' (Audio Session API, Safari and iOS web views 16.4+) makes it behave
+    // like a music app instead: audible with the switch on. No-op where unsupported.
+    if (navigator.audioSession && navigator.audioSession.type !== 'playback') {
+      try {
+        navigator.audioSession.type = 'playback'
+      } catch {
+        // Unsupported value on this platform: keep the default behaviour.
+      }
+    }
     if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)()
     // iOS/Safari suspend the context until a user gesture; resume on start.
     if (ctx.state === 'suspended') ctx.resume()

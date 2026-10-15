@@ -49,6 +49,11 @@ item reaches "Next".
   fields: each tempo step is a whole number of plays, the adjusted total is shown, and the
   running view shows "Play X of N". Possible follow-ups: a minutes / plays switch on each
   block in the editor, and a small tempo staircase preview before starting.
+- **Time signatures and accents**: pick a time signature (2/4, 3/4, 4/4, 6/8, 7/8...)
+  with an accented first beat, then optionally set each beat to accent / normal / silent.
+  The engine already counts beats, so this is mostly a beats-per-bar setting, a pitch or
+  level per beat, and a beat indicator that shows where you are in the bar. Save it with
+  presets and per block, so a session can switch metre between steps.
 - **Badges / medals / rewards**: plan now, but needs **human-designed art** (no AI
   visuals), so hold the visual polish until assets exist. Logic can use `mdi` placeholders.
 - **Practice tips / guided templates**: curated, science-backed guidance shown during
@@ -95,8 +100,8 @@ Android, no new language.
   CocoaPods), running in the iPhone simulator with saved data surviving a relaunch.
   `npm run ios` builds, syncs, and opens it in Xcode.
 - **Run on the author's iPhone**: free Apple ID, steps in `mobile.md`.
-- **Mobile polish**: (status-bar colour and bottom tab bar done) iOS audio session
-  (play with the silent switch on and mix with other apps), keep-awake, native storage
+- **Mobile polish**: (status-bar colour, bottom tab bar, and playing with the silent
+  switch on done) mixing with other apps' audio, keep-awake, native storage
   adapter, and a human-designed app icon. Details in `mobile.md`.
 - **Android**: not started (Android Studio, then `cap add android`).
 
