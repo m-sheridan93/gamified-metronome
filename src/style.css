@@ -1,5 +1,7 @@
 /* Vuetify styles the app itself; this only sets the page behind it. The background
-   matches the theme so iOS overscroll and the safe areas don't flash another colour. */
+   matches the theme so iOS overscroll and the safe areas don't flash another colour.
+   The media query covers the first paint; once the app runs, data-theme (set by
+   useAppearance) wins, so a light / dark choice that differs from the phone applies. */
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -18,6 +20,16 @@
   :root {
     background-color: #121212;
   }
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  background-color: #ffffff;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  background-color: #121212;
 }
 
 body {

@@ -7,6 +7,7 @@ import * as directives from 'vuetify/directives'
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css' // icon font for Vuetify's mdi-* icons
 import { initProgress } from './composables/useProgress'
+import { savedAppearance } from './composables/useAppearance'
 
 // Palette (see docs/planning/design-assets.md). Backgrounds stay Vuetify's neutral white
 // and dark grey; the palette is for accents. Dark mode uses Spearmint, Teal Green's lighter
@@ -43,5 +44,6 @@ const vuetify = createVuetify({
 
 // Load saved progress first, so every component sees the user's real data on setup.
 initProgress().then(() => {
+    vuetify.theme.change(savedAppearance()) // the saved light / dark choice, before first paint
     createApp(App).use(vuetify).mount('#app')
 })
