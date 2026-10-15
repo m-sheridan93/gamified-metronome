@@ -144,8 +144,10 @@ second or two.
 - **Keep the screen awake** during practice (keep-awake plugin).
 - **Native storage adapter** (see "What changes in the app" above), plus a one-time
   migration from WebView `localStorage`.
-- **App icon and launch screen**: currently Capacitor's placeholders; they need
-  human-designed artwork (no AI visuals).
+- ~~App icon~~ Done (v1): the author's own design; source and export in `design/`.
+  Replace `design/icon-1024.png` and copy it over
+  `ios/App/App/Assets.xcassets/AppIcon.appiconset/AppIcon-512@2x.png` to update it.
+- **Launch screen**: still Capacitor's placeholder. The mark centred on Forest Green.
 
 ## Sequencing
 
