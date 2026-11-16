@@ -86,8 +86,8 @@ Cheap now, prevents a rewrite later. The point is backend-*ready*, not a backend
   Per-entity repositories are deferred until backend sync, since the single save blob
   maps onto tables at sync time (see `accounts-and-security.md`).
 - ~~A "current profile" concept~~ Done: the on-device profile from onboarding.
-- ~~Pick a target backend direction~~ Decided: Supabase (Postgres + auth). See
-  `accounts-and-security.md`.
+- ~~Pick a target backend direction~~ Decided: Neon (Postgres, Neon Auth, Data API).
+  Schema with Row Level Security in `db/`; see `accounts-and-security.md`.
 - **Keep state serialisable and sync-shaped** (no functions in stored state, deterministic
   IDs, no reliance on array position).
 
