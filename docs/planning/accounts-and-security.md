@@ -10,7 +10,8 @@ security decisions are made deliberately rather than under pressure. Companions:
   save blob as sessions and presets.
 - **Accounts come later**, only when there's a reason (see triggers below).
 - **We never handle passwords ourselves.** Sign-in goes through a managed provider.
-- **Provider: Supabase** (Postgres database + auth), unless something changes the call.
+- **Provider: Neon** (Postgres database, with Neon Auth for sign-in and the Data API for
+  the app). Schema and setup steps are in `db/`.
 - **Local-first:** the app stays fully usable without an account. Signing in is optional
   and uploads the user's existing on-device data.
 
@@ -39,7 +40,8 @@ Add accounts when one of these is actually wanted, not before:
 
 | Option | Database | Notes |
 |---|---|---|
-| **Supabase** (chosen) | Postgres (SQL) | Auth + database + Row Level Security in one. SQL suits a fullstack dev. JS client works in Vue and Capacitor. Open source, can self-host later. |
+| **Neon** (chosen) | Postgres (SQL) | Serverless Postgres with Neon Auth and a Data API; Row Level Security keeps users apart. Generous free plan (1 GB per project, scales to zero when idle). SQL suits a fullstack dev. |
+| Supabase | Postgres (SQL) | The most widely used option: auth, database, file storage, and realtime in one. Also a good fit; we don't need storage or realtime yet. |
 | Firebase | Firestore (NoSQL) | Mature, Google-run. Security rules language instead of SQL. Data modelling differs from what we have. |
 | Clerk / Auth0 | none (auth only) | Excellent auth UIs, but a database is still needed separately, so two vendors instead of one. |
 
@@ -72,22 +74,23 @@ Lifetime totals and streaks can be derived from these rather than stored.
 
 ### Row Level Security (the important part)
 
-Supabase gives the app a public **anon key** that ships inside the app. That's by design,
-and it's safe **only because** Row Level Security stops anyone reading or writing rows
-that aren't theirs. Every table gets RLS switched on, with policies like:
+The app never holds a database password. It calls Neon's **Data API** with the
+signed-in user's token, and Row Level Security stops anyone reading or writing rows
+that aren't theirs. `auth.user_id()` is the user id from that token. Every table gets
+RLS switched on, with a policy like:
 
 ```sql
 alter table sessions enable row level security;
 
-create policy "Users can read their own sessions"
-  on sessions for select using (auth.uid() = user_id);
-
-create policy "Users can add their own sessions"
-  on sessions for insert with check (auth.uid() = user_id);
+create policy "Own sessions" on sessions for all to authenticated
+  using (user_id = auth.user_id()) with check (user_id = auth.user_id());
 ```
 
-The **service role key** bypasses RLS entirely. It must never be shipped in the app or
-committed to git; it's only for trusted server-side scripts, if we ever have any.
+The full schema is `db/migrations/001_initial_schema.sql`.
+
+The **connection string** (database password) bypasses all of this. It must never be
+shipped in the app or committed to git; it's only for migrations and admin work from
+the author's computer, kept in `.env.local`.
 
 ## Local-first migration
 
@@ -112,7 +115,8 @@ committed to git; it's only for trusted server-side scripts, if we ever have any
 ## Security checklist (before launching accounts)
 
 - [ ] RLS enabled on every table, with policies tested against a second user's data.
-- [ ] No service role key in the app bundle or the repo.
+- [ ] No connection string or other secret in the app bundle or the repo (and no
+  `VITE_`-prefixed secrets).
 - [ ] Only passwordless/OAuth methods enabled (or provider-hashed passwords if offered).
 - [ ] Email verification on, rate limits left at provider defaults or stricter.
 - [ ] Sessions stored in secure storage on mobile.
@@ -123,5 +127,7 @@ committed to git; it's only for trusted server-side scripts, if we ever have any
 ## Open questions
 
 - Which trigger (backup, sync, or social) will actually prompt adding accounts?
+- Check that Neon Auth supports Sign in with Apple (needed on iOS if Google is offered)
+  and redirects back into the Capacitor app via a deep link, before building sign-in.
 - Teacher mode needs shared access between users; its RLS policies are more complex and
   should get their own plan when it's in scope.
