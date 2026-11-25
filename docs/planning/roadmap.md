@@ -111,7 +111,7 @@ Android, no new language.
   YouTube / Spotify / Songsterr / MuseScore? Known walls: Spotify API won't slow tracks;
   YouTube embeds only do fixed speeds; MuseScore in-app viewing isn't openly available;
   Songsterr is its own app. Likely realistic scope: a speed-adjustable player for files
-  the *user* owns. Produce a findings note before this pillar gets a plan.
+  the *user* owns. Produce a findings note before this area gets a plan.
 
 ## Dependency notes
 

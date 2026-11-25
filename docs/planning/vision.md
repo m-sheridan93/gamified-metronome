@@ -1,80 +1,84 @@
-# Vision & Principles
+# Vision and principles
 
-The North Star and the rules that keep scope sane. This supersedes the roadmap in the
-archived `00-overview.md`. Companion: `roadmap.md` (what, in what order).
+What this app is for, and the rules that keep its scope in check. This replaces the
+roadmap in the archived `00-overview.md`. The order things get built in is in
+`roadmap.md`.
 
 ## What it is
 
-A practice tool for musicians that makes focused, deliberate practice easy to *do*,
-easy to *log*, and rewarding to *keep up*. The metronome is **one feature inside it**,
-not the point.
+A practice tool for musicians. It should make focused practice easy to start, easy to
+log, and worth keeping up. The metronome is one feature of it, and not the main one.
 
-North Star: **the tool the author would open every single day to practice.**
+The test for everything: would the author open it every day to practice?
 
 ## Who it's for
 
-- **Primary user: the author**, a performing guitarist who practices with a specific
-  method (timed blocks, stepped tempos). If he wouldn't use it daily, it isn't done.
-- **Then**: other practicing musicians who want structure and a record of their work.
-- **Eventually (platform phase)**: teachers tracking students; friends keeping each
-  other accountable.
+- The author first: a performing guitarist with a specific method (timed blocks,
+  stepping the tempo up). If the author wouldn't use it daily, it isn't finished.
+- Then other musicians who want some structure and a record of what they've done.
+- Eventually, once there's a backend: teachers keeping track of students, and friends
+  keeping each other going.
 
-## Ambition & stance
+## How ambitious
 
-- **Side project.** The author has a day job; there's no revenue pressure and no need
-  to out-feature the incumbents (Modacity, Etuda, Tonara, Riffshed; see `roadmap.md`).
-  "Let's see" is a valid goal.
-- **But architected to grow.** The author is a fullstack developer and wants the
-  foundations set up well *early*, so social, accounts, and teacher mode can be built
-  on later without a rewrite. We sequence features solo-first, but we do **not** make
-  solo-only architectural choices that block a backend.
+It's a side project. The author has a day job, so there's no revenue pressure and no
+need to match the established apps (Modacity, Etuda, Tonara, Riffshed; see
+`roadmap.md`) feature for feature. "Let's see where it goes" is a fine goal.
 
-## The solo → platform line
+That said, the author is a fullstack developer and wants the groundwork done properly
+early on, so accounts, social features and teacher mode can come later without a
+rewrite. Features get built for one person first, but nothing in the architecture
+should rule out a backend.
 
-There is an architectural fault line in the feature set:
+## Solo features and platform features
 
-- **Solo** (runs on-device, no server): metronome, sessions, presets, logging, streaks,
-  challenges, badges, onboarding, practice tips.
-- **Platform** (needs backend + accounts + other people): social feed, custom feed,
+The feature list splits in two:
+
+- Solo, running on the device with no server: metronome, sessions, presets, logging,
+  streaks, challenges, badges, onboarding, practice tips.
+- Platform, needing a backend, accounts and other people: social feed, custom feed,
   teacher mode, students, comments, events.
 
-**Rule:** build *features* solo-first (don't build social UI with no users), but keep
-the *data model and storage layer* backend-ready from day one. Crossing into platform is
-a deliberate, later decision; the architecture should make it a plug-in, not a rebuild.
+So: build features solo-first (there's no point building social screens with no users),
+but keep the data model and storage ready for a backend from the start. Moving to the
+platform side is a separate decision for later, and when it comes it should mean
+connecting a backend, not rebuilding the app.
 
-## Product pillars
+## What's in scope
 
-1. **Practice Engine**: metronome, free + guided (stepped-tempo) sessions, savable
-   presets, session logging, lifetime hours.
-2. **Motivation**: streaks, challenges, badges/medals.
-3. **Personalisation**: onboarding (instruments, level, genres, weekly/daily goals,
-   what you like to practice) that configures the above.
-4. **Guidance**: science-backed practice tips and guided session templates.
-5. **Music material**: slow-downer / embedded players (feasibility unproven; see
-   roadmap investigation).
-6. **Social** *(platform)*: practice feed, friends, the comparison-safe custom feed.
-7. **Teacher mode** *(platform)*: student tracking, feeds, comments, events.
+1. Practice: metronome, free and stepped-tempo sessions, saved presets, session
+   logging, lifetime hours.
+2. Motivation: streaks, challenges, badges and medals.
+3. Personalisation: onboarding (instruments, level, genres, daily and weekly goals, what
+   you like to practice), which then sets up everything above.
+4. Guidance: practice tips grounded in research, and guided session templates.
+5. Music to practice with: a slow-downer or embedded players. Not yet known to be
+   feasible; see the investigation in the roadmap.
+6. Social (platform): a practice feed, friends, and a feed that doesn't invite
+   comparison.
+7. Teacher mode (platform): tracking students, their feeds, comments, events.
 
-## Principles & constraints
+## Principles
 
-- **Build for self first.** The daily-use test above is the acceptance bar.
-- **No AI-generated visuals or designs.** Humans design the look. The current stack
-  (Vuetify Material components + `mdi` icons) is a human-designed system and is fine as
-  the baseline; anything illustrative (badges, medals, any studio art) waits for real
-  assets from a person. AI writes code, not art.
-- **Comparison can harm.** Social media's "how much did everyone else do" drives anxiety.
-  If/when a feed exists, **"see *who* practiced, not *how much*" is a first-class
-  option**, not an afterthought. Never force comparison. Captured now so it's baked in
-  later, not bolted on.
-- **Backend-ready by construction.** Domain entities have stable IDs and timestamps,
-  domain logic talks to a storage layer it doesn't own, and there is a "current profile"
-  concept even while single-user. See `roadmap.md` → Platform foundations.
-- **The metronome is a feature, not the centre.** Framing, navigation, and docs should
+- Build it for the author first. Daily use is the bar.
+- No AI-generated visuals or designs. People design the look. Vuetify's Material
+  components and `mdi` icons are a human-made design system, so they're fine as a
+  baseline. Anything illustrative (badges, medals, studio art) waits for real artwork
+  from a person. AI writes code here, not art.
+- Comparison can do harm. Seeing how much everyone else practiced makes people anxious.
+  If a feed ever exists, "see who practiced, not how much" has to be a proper option
+  from day one, and comparison is never forced. It's written down now so it gets built
+  in from the start.
+- Ready for a backend from the start. Records have stable ids and timestamps, the app's
+  logic goes through a storage layer instead of touching storage directly, and there's
+  a "current profile" even with a single user. See "Platform foundations" in
+  `roadmap.md`.
+- The metronome is a feature, not the whole app, and the navigation and docs should
   reflect that.
 
-## Non-goals (for now)
+## Not doing (for now)
 
-- Beating the incumbents on feature count.
-- Standing up a server before solo features justify it.
-- Monetisation mechanics. (Revisit only if it's actually getting used.)
-- AI-generated imagery of any kind.
+- Competing with the established apps on number of features.
+- Running a server before the solo features need one.
+- Anything to do with making money. Only worth revisiting if people actually use it.
+- AI-generated images of any kind.
